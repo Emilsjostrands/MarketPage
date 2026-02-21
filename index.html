@@ -6,352 +6,316 @@
 <title>Portföljvy</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@300;400;500&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
 <style>
-:root {
-  --bg: #0b0d11;
-  --s1: #111318;
-  --s2: #181b22;
-  --s3: #1f232d;
-  --border: rgba(255,255,255,0.07);
-  --border2: rgba(255,255,255,0.12);
-  --accent: #b8f050;
-  --accent-dim: rgba(184,240,80,0.12);
-  --accent2: #50c8f0;
-  --gold: #f0c050;
-  --red: #f05060;
-  --red-dim: rgba(240,80,96,0.12);
-  --green-dim: rgba(184,240,80,0.08);
-  --text: #dde0e8;
-  --muted: #5a6070;
-  --muted2: #7a8090;
-  --sidebar-w: 240px;
+:root{
+  --bg:#0b0d11;--s1:#111318;--s2:#181b22;--s3:#1e2230;
+  --border:rgba(255,255,255,0.07);--border2:rgba(255,255,255,0.13);
+  --accent:#b8f050;--accent-dim:rgba(184,240,80,0.1);--accent-glow:rgba(184,240,80,0.15);
+  --accent2:#50c8f0;--gold:#f0c050;--red:#f05060;--red-dim:rgba(240,80,96,0.1);
+  --text:#dde0e8;--muted:#55606f;--muted2:#8090a8;
+  --sidebar-w:248px;
+  --cat-financial:#50c8f0;--cat-market:#b8f050;--cat-risk:#f05060;--cat-macro:#f0c050;--cat-misc:#a070f0;
 }
 *{margin:0;padding:0;box-sizing:border-box;}
 html,body{height:100%;overflow:hidden;}
-body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-size:14px;display:flex;flex-direction:column;}
-
-/* ── TICKER ── */
-.ticker{background:var(--s1);border-bottom:1px solid var(--border);height:36px;overflow:hidden;display:flex;align-items:center;flex-shrink:0;}
-.ticker-track{display:flex;animation:tick 40s linear infinite;white-space:nowrap;}
+body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-size:14px;line-height:1.6;display:flex;flex-direction:column;}
+.ticker{background:var(--s1);border-bottom:1px solid var(--border);height:34px;overflow:hidden;display:flex;align-items:center;flex-shrink:0;}
+.ticker-track{display:flex;animation:tick 45s linear infinite;white-space:nowrap;}
 .ticker-track:hover{animation-play-state:paused;}
-.t-item{padding:0 28px;font-family:'DM Mono',monospace;font-size:11px;display:flex;align-items:center;gap:8px;}
-.t-sym{color:var(--muted2);}
-.t-price{color:var(--text);}
-.t-pos{color:var(--accent);}
-.t-neg{color:var(--red);}
-.t-div{color:var(--border2);padding:0 4px;}
+.t-item{padding:0 24px;font-family:'DM Mono',monospace;font-size:11px;display:flex;align-items:center;gap:8px;}
+.t-sym{color:var(--muted2)}.t-price{color:var(--text)}.t-pos{color:var(--accent)}.t-neg{color:var(--red)}
 @keyframes tick{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-
-/* ── LAYOUT ── */
 .layout{display:flex;flex:1;overflow:hidden;}
-
-/* ── SIDEBAR ── */
 .sidebar{width:var(--sidebar-w);background:var(--s1);border-right:1px solid var(--border);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;}
-.sidebar-logo{padding:20px 20px 16px;border-bottom:1px solid var(--border);}
-.logo-text{font-family:'Playfair Display',serif;font-size:18px;color:var(--accent);letter-spacing:0.01em;}
-.logo-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:0.15em;margin-top:3px;}
-.sidebar-scroll{flex:1;overflow-y:auto;padding-bottom:16px;}
-.sidebar-scroll::-webkit-scrollbar{width:3px;}
-.sidebar-scroll::-webkit-scrollbar-thumb{background:var(--border2);}
-
-.nav-section{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;padding:16px 20px 6px;}
-.nav-item{display:flex;align-items:center;gap:9px;padding:8px 20px;cursor:pointer;color:var(--muted2);font-size:13px;transition:all 0.15s;position:relative;border-left:2px solid transparent;}
+.sidebar-logo{padding:18px 20px 15px;border-bottom:1px solid var(--border);}
+.logo-text{font-family:'Playfair Display',serif;font-size:17px;color:var(--accent);}
+.logo-sub{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:0.15em;margin-top:2px;}
+.sidebar-body{flex:1;overflow-y:auto;padding-bottom:20px;}
+.sidebar-body::-webkit-scrollbar{width:3px;}
+.sidebar-body::-webkit-scrollbar-thumb{background:var(--border2);}
+.nav-section{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:0.15em;text-transform:uppercase;padding:14px 20px 5px;}
+.nav-item{display:flex;align-items:center;gap:9px;padding:8px 20px;cursor:pointer;color:var(--muted2);font-size:13px;transition:all 0.15s;border-left:2px solid transparent;}
 .nav-item:hover{color:var(--text);background:var(--s2);}
 .nav-item.active{color:var(--accent);background:var(--accent-dim);border-left-color:var(--accent);}
-.nav-icon{font-size:13px;width:16px;text-align:center;flex-shrink:0;}
-.nav-label{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.nav-flag{font-size:11px;}
-
-/* Stock items in sidebar */
-.stock-nav-item{display:flex;align-items:center;gap:9px;padding:7px 20px 7px 28px;cursor:pointer;color:var(--muted2);font-size:12px;transition:all 0.15s;border-left:2px solid transparent;position:relative;}
-.stock-nav-item:hover{color:var(--text);background:var(--s2);}
-.stock-nav-item.active{color:var(--accent);background:var(--accent-dim);border-left-color:var(--accent);}
+.nav-icon{font-size:12px;width:16px;text-align:center;flex-shrink:0;}
+.stock-nav{display:flex;align-items:center;gap:8px;padding:7px 18px 7px 26px;cursor:pointer;color:var(--muted2);font-size:12px;transition:all 0.15s;border-left:2px solid transparent;}
+.stock-nav:hover{color:var(--text);background:var(--s2);}
+.stock-nav.active{color:var(--accent);background:var(--accent-dim);border-left-color:var(--accent);}
 .stock-nav-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.stock-nav-chg{font-family:'DM Mono',monospace;font-size:10px;flex-shrink:0;}
-
-.add-stock-btn{display:flex;align-items:center;gap:8px;padding:7px 20px 7px 28px;cursor:pointer;color:var(--muted);font-size:12px;transition:all 0.15s;}
-.add-stock-btn:hover{color:var(--accent);}
-
-/* ── MAIN ── */
+.stock-nav-price{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent);flex-shrink:0;}
+.add-btn{display:flex;align-items:center;gap:8px;padding:8px 18px 8px 26px;cursor:pointer;color:var(--muted);font-size:12px;transition:color 0.15s;}
+.add-btn:hover{color:var(--accent);}
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
-.content{flex:1;overflow-y:auto;padding:32px 36px;}
+.content{flex:1;overflow-y:auto;padding:30px 36px 60px;}
 .content::-webkit-scrollbar{width:4px;}
 .content::-webkit-scrollbar-thumb{background:var(--border2);}
-
-/* ── PAGES ── */
 .page{display:none;}
-.page.active{display:block;animation:fadeIn 0.2s ease;}
-@keyframes fadeIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
-
-.page-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:28px;}
-.page-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:400;line-height:1.2;}
-.page-title small{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);display:block;margin-bottom:4px;letter-spacing:0.1em;text-transform:uppercase;}
-.page-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-align:right;line-height:1.7;}
-
-/* ── STATS ── */
-.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:24px;}
-.stat{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:18px;}
-.stat-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:8px;}
-.stat-val{font-size:22px;font-weight:500;letter-spacing:-0.02em;line-height:1;}
-.stat-sub{font-family:'DM Mono',monospace;font-size:10px;margin-top:5px;color:var(--muted2);}
-.pos{color:var(--accent);}
-.neg{color:var(--red);}
-
-/* ── CARDS ── */
-.card{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:22px;margin-bottom:18px;}
-.card-title{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:16px;}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:18px;}
-
-/* ── TABLE ── */
+.page.active{display:block;animation:fadeUp 0.2s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.page-header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:26px;}
+.ph-left small{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;display:block;margin-bottom:4px;}
+.ph-title{font-family:'Playfair Display',serif;font-size:26px;font-weight:400;}
+.ph-right{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-align:right;line-height:1.8;}
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px;}
+.stat{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:16px 18px;}
+.stat-lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:7px;}
+.stat-val{font-size:20px;font-weight:500;letter-spacing:-0.02em;}
+.stat-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);margin-top:4px;}
+.pos{color:var(--accent)}.neg{color:var(--red)}
+.card{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:20px;margin-bottom:16px;}
+.card-title{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:14px;}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
 .htable{width:100%;border-collapse:collapse;}
-.htable th{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;padding:0 0 10px;text-align:left;border-bottom:1px solid var(--border);}
+.htable th{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;padding:0 0 9px;text-align:left;border-bottom:1px solid var(--border);}
 .htable th:not(:first-child){text-align:right;}
-.htable td{padding:10px 0;border-bottom:1px solid var(--border);font-size:12px;}
+.htable td{padding:9px 0;border-bottom:1px solid var(--border);font-size:12px;cursor:pointer;}
 .htable td:not(:first-child){text-align:right;font-family:'DM Mono',monospace;font-size:11px;}
 .htable tr:last-child td{border-bottom:none;}
-.htable tr{cursor:pointer;transition:background 0.1s;}
-.htable tr:hover td{background:var(--s2);}
-.sn{font-weight:500;font-size:13px;}
-.st{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:2px;}
-
-/* ── CHART ── */
-.chart-area{height:100px;display:flex;align-items:flex-end;gap:2px;margin-top:8px;}
-.bar{border-radius:2px 2px 0 0;flex:1;transition:all 0.2s;background:var(--s3);}
-.bar:hover{background:rgba(184,240,80,0.5);}
-.bar.hi{background:rgba(184,240,80,0.35);}
-
-/* ── NEWS ── */
-.news-controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;}
-.badge{font-family:'DM Mono',monospace;font-size:10px;background:var(--s2);border:1px solid var(--border);padding:6px 14px;border-radius:20px;color:var(--muted2);}
-.btn-row{display:flex;gap:8px;}
-.btn{background:var(--accent);color:#0b0d11;border:none;padding:8px 18px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;transition:opacity 0.15s;}
+.htable tr:hover td{color:var(--accent);}
+.sn{font-weight:500;font-size:13px;}.st{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:1px;}
+.chart-area{height:90px;display:flex;align-items:flex-end;gap:2px;margin-top:8px;}
+.bar{border-radius:2px 2px 0 0;flex:1;background:var(--s3);transition:background 0.2s;}
+.bar:hover,.bar.hi{background:rgba(184,240,80,0.4);}
+.btn{background:var(--accent);color:#0b0d11;border:none;padding:8px 18px;border-radius:7px;font-size:12px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;transition:opacity 0.15s;display:inline-flex;align-items:center;gap:7px;}
 .btn:hover{opacity:0.85;}
 .btn-ghost{background:transparent;color:var(--muted2);border:1px solid var(--border);padding:8px 14px;border-radius:7px;font-size:12px;cursor:pointer;font-family:'Sora',sans-serif;transition:all 0.15s;}
 .btn-ghost:hover{border-color:var(--border2);color:var(--text);}
-
-.news-item{border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:12px;background:var(--s1);transition:border-color 0.2s,transform 0.15s;}
-.news-item:hover{border-color:rgba(184,240,80,0.25);transform:translateY(-1px);}
-.ni-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px;}
-.ni-title{font-size:13px;font-weight:500;line-height:1.4;flex:1;}
-.impact{font-family:'DM Mono',monospace;font-size:9px;padding:3px 10px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
-.imp-h{background:rgba(240,80,96,0.15);color:var(--red);border:1px solid rgba(240,80,96,0.3);}
-.imp-m{background:rgba(240,192,80,0.15);color:var(--gold);border:1px solid rgba(240,192,80,0.3);}
-.imp-l{background:rgba(184,240,80,0.1);color:var(--accent);border:1px solid rgba(184,240,80,0.2);}
-.ni-body{font-size:12px;color:var(--muted2);line-height:1.65;margin-bottom:10px;}
-.tags{display:flex;gap:6px;flex-wrap:wrap;}
-.tag{font-family:'DM Mono',monospace;font-size:9px;background:var(--s2);border:1px solid var(--border);padding:3px 9px;border-radius:4px;color:var(--muted2);}
-
-/* ── STOCK PAGE ── */
-.stock-hero{background:var(--s1);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:flex-start;}
-.sh-left{}
-.sh-name{font-family:'Playfair Display',serif;font-size:28px;font-weight:400;}
-.sh-meta{font-family:'DM Mono',monospace;font-size:11px;color:var(--muted2);margin-top:4px;display:flex;gap:16px;}
+.btn-sm{padding:5px 12px;font-size:11px;}
+.gap-8{display:flex;gap:8px;}
+/* STOCK PAGE */
+.stock-hero{background:linear-gradient(135deg,var(--s1) 0%,var(--s2) 100%);border:1px solid var(--border);border-radius:12px;padding:24px 28px;margin-bottom:6px;display:flex;justify-content:space-between;align-items:flex-start;position:relative;overflow:hidden;}
+.stock-hero::before{content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;background:radial-gradient(circle,var(--accent-glow) 0%,transparent 70%);pointer-events:none;}
+.sh-flag{font-size:26px;margin-bottom:6px;display:block;}
+.sh-name{font-family:'Playfair Display',serif;font-size:27px;font-weight:400;line-height:1.1;}
+.sh-meta{display:flex;gap:14px;margin-top:6px;flex-wrap:wrap;}
+.sh-meta-item{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);}
 .sh-right{text-align:right;}
-.sh-price{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;letter-spacing:-0.02em;}
-.sh-change{font-family:'DM Mono',monospace;font-size:13px;margin-top:4px;}
-
-.editor-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:20px;}
-.etab{padding:10px 18px;font-size:12px;color:var(--muted2);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;}
-.etab:hover{color:var(--text);}
-.etab.active{color:var(--accent);border-bottom-color:var(--accent);}
-
-.editor-content{display:none;}
-.editor-content.active{display:block;}
-
-.note-editor{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:16px;min-height:180px;font-size:13px;line-height:1.75;color:var(--text);outline:none;width:100%;font-family:'Sora',sans-serif;resize:vertical;}
-.note-editor:focus{border-color:rgba(184,240,80,0.3);}
-
-.save-bar{display:flex;justify-content:space-between;align-items:center;margin-top:12px;}
-.save-hint{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
-
-.info-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
-.info-cell{background:var(--s2);border:1px solid var(--border);border-radius:8px;padding:14px;}
-.ic-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;}
-.ic-val{font-size:14px;font-weight:500;}
-.ic-input{background:transparent;border:none;color:var(--text);font-size:14px;font-weight:500;font-family:'Sora',sans-serif;width:100%;outline:none;}
-
-.tag-editor{margin-top:14px;display:flex;gap:8px;flex-wrap:wrap;align-items:center;}
-.tag-editable{font-family:'DM Mono',monospace;font-size:10px;padding:4px 12px;border-radius:4px;background:var(--accent-dim);border:1px solid rgba(184,240,80,0.25);color:var(--accent);cursor:pointer;transition:all 0.15s;display:flex;align-items:center;gap:6px;}
-.tag-editable:hover .tag-x{opacity:1;}
-.tag-x{opacity:0;font-size:11px;transition:opacity 0.15s;}
-.tag-add-input{background:transparent;border:1px dashed var(--border2);border-radius:4px;padding:4px 10px;font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);outline:none;width:100px;font-family:'DM Mono',monospace;}
-.tag-add-input:focus{border-color:rgba(184,240,80,0.3);color:var(--text);}
-
-/* ── ADD STOCK MODAL ── */
-.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.7);display:flex;align-items:center;justify-content:center;z-index:100;backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.sh-price{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;letter-spacing:-0.03em;}
+.stock-tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:20px;margin-top:10px;align-items:center;}
+.stag{font-family:'DM Mono',monospace;font-size:10px;padding:3px 10px;border-radius:4px;background:var(--accent-dim);border:1px solid rgba(184,240,80,0.2);color:var(--accent);display:flex;align-items:center;gap:5px;}
+.stag-x{cursor:pointer;opacity:0.5;transition:opacity 0.1s;font-size:12px;}.stag-x:hover{opacity:1;}
+.stag-add{background:transparent;border:1px dashed var(--border2);color:var(--muted);cursor:pointer;}
+.stag-add:hover{border-color:rgba(184,240,80,0.3);color:var(--accent);}
+.tag-input-inline{background:transparent;border:none;outline:none;font-family:'DM Mono',monospace;font-size:10px;color:var(--text);width:80px;}
+.stock-tabs{display:flex;gap:0;border-bottom:1px solid var(--border);margin-bottom:22px;overflow-x:auto;}
+.stock-tabs::-webkit-scrollbar{height:2px;}
+.stab{padding:10px 18px;font-size:12px;color:var(--muted2);cursor:pointer;border-bottom:2px solid transparent;transition:all 0.15s;white-space:nowrap;flex-shrink:0;}
+.stab:hover{color:var(--text);}
+.stab.active{color:var(--accent);border-bottom-color:var(--accent);}
+.tab-content{display:none;}.tab-content.active{display:block;animation:fadeUp 0.15s ease;}
+/* THESIS */
+.thesis-box{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:20px;}
+.thesis-header{padding:12px 18px;background:var(--s2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.thesis-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--accent);text-transform:uppercase;letter-spacing:0.15em;}
+.thesis-textarea{width:100%;background:transparent;border:none;outline:none;color:var(--text);font-family:'Sora',sans-serif;font-size:13px;line-height:1.75;resize:none;min-height:90px;padding:16px 18px;}
+.thesis-textarea::placeholder{color:var(--muted);}
+.thesis-footer{padding:10px 18px;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;background:var(--s2);}
+.save-status{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);}
+.save-status.saved{color:var(--accent);}
+/* NOTES */
+.notes-toolbar{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px;}
+.notes-title{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.12em;}
+.cat-filters{display:flex;gap:5px;flex-wrap:wrap;}
+.cat-filter{font-family:'DM Mono',monospace;font-size:9px;padding:3px 10px;border-radius:20px;border:1px solid var(--border);color:var(--muted2);cursor:pointer;transition:all 0.15s;}
+.cat-filter:hover{border-color:var(--border2);color:var(--text);}
+.cat-filter.active{border-color:var(--border2);color:var(--text);}
+.cat-filter[data-cat="financial"].active{border-color:var(--cat-financial);color:var(--cat-financial);}
+.cat-filter[data-cat="market"].active{border-color:var(--cat-market);color:var(--cat-market);}
+.cat-filter[data-cat="risk"].active{border-color:var(--cat-risk);color:var(--cat-risk);}
+.cat-filter[data-cat="macro"].active{border-color:var(--cat-macro);color:var(--cat-macro);}
+.cat-filter[data-cat="misc"].active{border-color:var(--cat-misc);color:var(--cat-misc);}
+.note-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;margin-bottom:10px;overflow:hidden;transition:border-color 0.2s;}
+.note-card:hover{border-color:var(--border2);}
+.note-card-header{padding:12px 16px;display:flex;align-items:center;gap:10px;cursor:pointer;user-select:none;}
+.note-cat-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;}
+.note-cat-dot[data-cat="financial"]{background:var(--cat-financial);}
+.note-cat-dot[data-cat="market"]{background:var(--cat-market);}
+.note-cat-dot[data-cat="risk"]{background:var(--cat-risk);}
+.note-cat-dot[data-cat="macro"]{background:var(--cat-macro);}
+.note-cat-dot[data-cat="misc"]{background:var(--cat-misc);}
+.note-card-title{font-size:13px;font-weight:500;flex:1;}
+.note-card-meta{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);display:flex;gap:10px;align-items:center;}
+.note-card-body{padding:0 16px 14px;font-size:12px;color:var(--muted2);line-height:1.7;display:none;}
+.note-card-body.open{display:block;}
+.note-card-actions{display:flex;gap:8px;margin-top:10px;padding-top:10px;border-top:1px solid var(--border);}
+.note-textarea{width:100%;background:var(--s2);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-family:'Sora',sans-serif;font-size:12px;line-height:1.7;resize:vertical;min-height:80px;outline:none;}
+.note-textarea:focus{border-color:rgba(184,240,80,0.3);}
+.add-note-form{background:var(--s2);border:1px dashed var(--border2);border-radius:10px;padding:18px;margin-bottom:16px;display:none;}
+.add-note-form.open{display:block;animation:fadeUp 0.15s ease;}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;}
+.form-input{background:var(--s1);border:1px solid var(--border);border-radius:6px;padding:9px 12px;color:var(--text);font-family:'Sora',sans-serif;font-size:12px;outline:none;width:100%;transition:border-color 0.15s;}
+.form-input:focus{border-color:rgba(184,240,80,0.35);}
+.form-select{background:var(--s1);border:1px solid var(--border);border-radius:6px;padding:9px 12px;color:var(--text);font-family:'Sora',sans-serif;font-size:12px;outline:none;width:100%;cursor:pointer;}
+.form-select option{background:var(--s1);}
+.form-textarea{width:100%;background:var(--s1);border:1px solid var(--border);border-radius:6px;padding:10px 12px;color:var(--text);font-family:'Sora',sans-serif;font-size:12px;line-height:1.7;resize:vertical;min-height:80px;outline:none;transition:border-color 0.15s;margin-bottom:10px;}
+.form-textarea:focus{border-color:rgba(184,240,80,0.35);}
+/* BULL BEAR */
+.bull-bear-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;}
+.bb-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+.bb-header{padding:12px 16px;display:flex;align-items:center;gap:8px;border-bottom:1px solid var(--border);}
+.bb-bull .bb-header{background:rgba(184,240,80,0.06);}
+.bb-bear .bb-header{background:rgba(240,80,96,0.06);}
+.bb-icon{font-size:16px;}
+.bb-label{font-family:'DM Mono',monospace;font-size:10px;text-transform:uppercase;letter-spacing:0.12em;}
+.bb-bull .bb-label{color:var(--accent);}.bb-bear .bb-label{color:var(--red);}
+.bb-body{padding:14px 16px;}
+.bb-textarea{width:100%;background:transparent;border:none;outline:none;color:var(--text);font-family:'Sora',sans-serif;font-size:12px;line-height:1.75;resize:none;min-height:140px;}
+.bb-textarea::placeholder{color:var(--muted);}
+/* NYCKELTAL */
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:16px;}
+.kpi-cell{background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:14px;}
+.kpi-lbl{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px;}
+.kpi-input{background:transparent;border:none;color:var(--text);font-size:15px;font-weight:500;font-family:'Sora',sans-serif;width:100%;outline:none;}
+.kpi-input::placeholder{color:var(--muted);font-size:13px;}
+/* NEWS TAB */
+.news-tab-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:8px;}
+.news-tab-title{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.12em;}
+.news-empty{text-align:center;padding:50px 20px;color:var(--muted);}
+.news-empty-icon{font-size:28px;margin-bottom:10px;}
+.news-empty-text{font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.08em;}
+.news-empty-sub{font-size:12px;color:var(--muted);margin-top:6px;}
+.news-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:18px;margin-bottom:10px;transition:all 0.2s;}
+.news-card:hover{border-color:rgba(184,240,80,0.25);transform:translateY(-1px);}
+.nc-top{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:8px;}
+.nc-title{font-size:13px;font-weight:500;line-height:1.4;flex:1;}
+.nc-badge{font-family:'DM Mono',monospace;font-size:9px;padding:3px 9px;border-radius:20px;white-space:nowrap;flex-shrink:0;}
+.nb-h{background:var(--red-dim);color:var(--red);border:1px solid rgba(240,80,96,0.3);}
+.nb-m{background:rgba(240,192,80,0.1);color:var(--gold);border:1px solid rgba(240,192,80,0.3);}
+.nb-l{background:var(--accent-dim);color:var(--accent);border:1px solid rgba(184,240,80,0.2);}
+.nc-body{font-size:12px;color:var(--muted2);line-height:1.65;margin-bottom:10px;}
+.nc-footer{display:flex;justify-content:space-between;align-items:center;}
+.nc-tags{display:flex;gap:5px;flex-wrap:wrap;}
+.nc-tag{font-family:'DM Mono',monospace;font-size:9px;background:var(--s2);border:1px solid var(--border);padding:2px 8px;border-radius:3px;color:var(--muted2);}
+.nc-meta{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);white-space:nowrap;margin-left:10px;}
+.nc-link{font-family:'DM Mono',monospace;font-size:10px;color:var(--accent2);text-decoration:none;display:inline-flex;align-items:center;gap:4px;margin-top:8px;}
+.nc-link:hover{text-decoration:underline;}
+.nc-delete{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);cursor:pointer;margin-left:10px;transition:color 0.15s;}
+.nc-delete:hover{color:var(--red);}
+.add-news-form{background:var(--s2);border:1px dashed var(--border2);border-radius:10px;padding:18px;margin-bottom:16px;display:none;}
+.add-news-form.open{display:block;animation:fadeUp 0.15s ease;}
+.sources-textarea{width:100%;background:var(--s1);border:1px solid var(--border);border-radius:8px;padding:14px;color:var(--text);font-family:'Sora',sans-serif;font-size:12px;line-height:1.75;resize:vertical;min-height:160px;outline:none;}
+.sources-textarea:focus{border-color:rgba(184,240,80,0.3);}
+/* PORTFOLIO GRID */
+.pgrid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;}
+.pgrid-card{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:16px;cursor:pointer;transition:all 0.2s;}
+.pgrid-card:hover{border-color:rgba(184,240,80,0.3);transform:translateY(-2px);}
+.pgc-top{display:flex;justify-content:space-between;margin-bottom:6px;}
+.pgc-name{font-weight:500;font-size:13px;}
+.pgc-ticker{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);margin-top:1px;}
+.pgc-price{font-family:'DM Mono',monospace;font-size:13px;color:var(--accent);}
+.pgc-thesis{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;}
+.pgc-stats{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap;}
+.pgc-stat{font-family:'DM Mono',monospace;font-size:9px;background:var(--s2);padding:2px 7px;border-radius:3px;color:var(--muted2);}
+.pgc-add{display:flex;align-items:center;justify-content:center;border-style:dashed;color:var(--muted);font-size:13px;min-height:100px;}
+.pgc-add:hover{color:var(--accent);border-color:rgba(184,240,80,0.3);}
+/* ONEPAGER */
+.onepager-controls{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px;flex-wrap:wrap;gap:10px;}
+.onepager-badge{font-family:'DM Mono',monospace;font-size:10px;background:var(--s2);border:1px solid var(--border);padding:6px 14px;border-radius:20px;color:var(--muted2);}
+/* MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.75);display:flex;align-items:center;justify-content:center;z-index:200;backdrop-filter:blur(6px);opacity:0;pointer-events:none;transition:opacity 0.2s;}
 .modal-overlay.open{opacity:1;pointer-events:all;}
-.modal{background:var(--s1);border:1px solid var(--border2);border-radius:14px;padding:28px;width:380px;transform:translateY(10px);transition:transform 0.2s;}
+.modal{background:var(--s1);border:1px solid var(--border2);border-radius:14px;padding:26px;width:400px;transform:translateY(12px);transition:transform 0.2s;}
 .modal-overlay.open .modal{transform:translateY(0);}
-.modal-title{font-family:'Playfair Display',serif;font-size:20px;margin-bottom:20px;}
-.modal label{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;display:block;margin-bottom:6px;margin-top:14px;}
-.modal input, .modal select{width:100%;background:var(--s2);border:1px solid var(--border2);border-radius:7px;padding:10px 12px;color:var(--text);font-family:'Sora',sans-serif;font-size:13px;outline:none;transition:border-color 0.15s;}
-.modal input:focus, .modal select:focus{border-color:rgba(184,240,80,0.4);}
+.modal-title{font-family:'Playfair Display',serif;font-size:20px;font-weight:400;margin-bottom:18px;}
+.modal label{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;display:block;margin-bottom:5px;margin-top:12px;}
+.modal input,.modal select{width:100%;background:var(--s2);border:1px solid var(--border2);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'Sora',sans-serif;font-size:13px;outline:none;transition:border-color 0.15s;}
+.modal input:focus,.modal select:focus{border-color:rgba(184,240,80,0.4);}
 .modal select option{background:var(--s2);}
-.modal-btns{display:flex;gap:10px;margin-top:22px;}
-.modal-btns .btn{flex:1;}
-.modal-btns .btn-ghost{flex:1;}
-
-/* ── PORTFOLIO LIST ── */
-.portfolio-list-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px;}
-.plc{background:var(--s1);border:1px solid var(--border);border-radius:10px;padding:18px;cursor:pointer;transition:all 0.2s;}
-.plc:hover{border-color:rgba(184,240,80,0.3);transform:translateY(-2px);}
-.plc-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
-.plc-name{font-weight:500;font-size:14px;}
-.plc-ticker{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);margin-top:2px;}
-.plc-price{font-family:'DM Mono',monospace;font-size:13px;text-align:right;}
-.plc-notes{font-size:11px;color:var(--muted);margin-top:6px;line-height:1.5;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.plc-add{display:flex;align-items:center;justify-content:center;border-style:dashed;color:var(--muted);font-size:13px;}
-.plc-add:hover{color:var(--accent);border-color:rgba(184,240,80,0.3);}
+.modal-btns{display:flex;gap:10px;margin-top:20px;}
+.modal-btns .btn,.modal-btns .btn-ghost{flex:1;justify-content:center;}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
 
-<!-- TICKER -->
-<div class="ticker">
-  <div class="ticker-track" id="tickerTrack"></div>
-</div>
+<div class="ticker"><div class="ticker-track" id="tickerTrack"></div></div>
 
-<!-- LAYOUT -->
 <div class="layout">
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text">Portföljvy</div>
+    <div class="logo-sub">Dina investeringar</div>
+  </div>
+  <div class="sidebar-body">
+    <div class="nav-section">Översikt</div>
+    <div class="nav-item active" onclick="navPage('dashboard',this)"><span class="nav-icon">◈</span>Dashboard</div>
+    <div class="nav-item" onclick="navPage('onepager',this)"><span class="nav-icon">◎</span>Nyheter · Onepager</div>
+    <div class="nav-section">Portfölj</div>
+    <div class="nav-item" onclick="navPage('portfolio',this)"><span class="nav-icon">▦</span>Alla bolag</div>
+    <div id="stockNav"></div>
+    <div class="add-btn" onclick="openModal()"><span style="font-size:15px">+</span> Lägg till bolag</div>
+  </div>
+</aside>
 
-  <!-- SIDEBAR -->
-  <aside class="sidebar">
-    <div class="sidebar-logo">
-      <div class="logo-text">Portföljvy</div>
-      <div class="logo-sub">Dina investeringar</div>
+<div class="main">
+<div class="content">
+
+<div class="page active" id="page-dashboard">
+  <div class="page-header">
+    <div class="ph-left"><small>Välkommen tillbaka</small><div class="ph-title">Dashboard</div></div>
+    <div class="ph-right" id="dashDate"></div>
+  </div>
+  <div class="stats-row">
+    <div class="stat"><div class="stat-lbl">Antal innehav</div><div class="stat-val" id="s-count">0</div><div class="stat-sub" id="s-break">— SE · — US</div></div>
+    <div class="stat"><div class="stat-lbl">Med grundtes</div><div class="stat-val" id="s-thesis">0</div><div class="stat-sub">Bolag med analys</div></div>
+    <div class="stat"><div class="stat-lbl">Anteckningar</div><div class="stat-val" id="s-notes">0</div><div class="stat-sub">Totalt sparade</div></div>
+    <div class="stat"><div class="stat-lbl">Nyheter sparade</div><div class="stat-val" id="s-news">0</div><div class="stat-sub">Totalt</div></div>
+  </div>
+  <div class="grid2">
+    <div class="card">
+      <div class="card-title">Innehav · Snabbvy</div>
+      <table class="htable"><thead><tr><th>Bolag</th><th>Ticker</th><th>Börs</th><th>Kurs</th></tr></thead>
+      <tbody id="dashTableBody"></tbody></table>
     </div>
-    <div class="sidebar-scroll">
-
-      <div class="nav-section">Översikt</div>
-      <div class="nav-item active" onclick="nav('dashboard',this)">
-        <span class="nav-icon">◈</span><span class="nav-label">Dashboard</span>
-      </div>
-      <div class="nav-item" onclick="nav('news',this)">
-        <span class="nav-icon">◎</span><span class="nav-label">Nyheter · Onepager</span>
-      </div>
-
-      <div class="nav-section">Portfölj</div>
-      <div class="nav-item" onclick="nav('portfolio',this)">
-        <span class="nav-icon">▦</span><span class="nav-label">Alla bolag</span>
-      </div>
-
-      <!-- Dynamic stock items -->
-      <div id="stockNavItems"></div>
-
-      <div class="add-stock-btn" onclick="openModal()">
-        <span style="font-size:16px;line-height:1;">+</span>
-        <span>Lägg till bolag</span>
-      </div>
-
-    </div>
-  </aside>
-
-  <!-- MAIN -->
-  <div class="main">
-    <div class="content">
-
-      <!-- DASHBOARD -->
-      <div class="page active" id="page-dashboard">
-        <div class="page-header">
-          <div class="page-title"><small>Välkommen tillbaka</small>Dashboard</div>
-          <div class="page-meta" id="dashDate"></div>
-        </div>
-        <div class="stats-row">
-          <div class="stat">
-            <div class="stat-label">Portföljvärde</div>
-            <div class="stat-val" id="totalValue">—</div>
-            <div class="stat-sub">Totalt bokfört värde</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Antal innehav</div>
-            <div class="stat-val" id="holdingCount">0</div>
-            <div class="stat-sub" id="holdingBreak">—</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Aktiva analyser</div>
-            <div class="stat-val" id="noteCount">0</div>
-            <div class="stat-sub">Med anteckningar</div>
-          </div>
-          <div class="stat">
-            <div class="stat-label">Senast uppdaterad</div>
-            <div class="stat-val" style="font-size:16px;" id="lastUpdated">—</div>
-            <div class="stat-sub">Manuell kurs</div>
-          </div>
-        </div>
-
-        <div class="grid2">
-          <div class="card">
-            <div class="card-title">Innehav · Snabbvy</div>
-            <table class="htable" id="dashTable">
-              <thead><tr>
-                <th>Bolag</th><th>Kurs</th><th>Notering</th><th>Börsvärde</th>
-              </tr></thead>
-              <tbody id="dashTableBody"></tbody>
-            </table>
-          </div>
-          <div class="card">
-            <div class="card-title">Portföljsammansättning</div>
-            <div class="chart-area" id="chartBars"></div>
-          </div>
-        </div>
-      </div>
-
-      <!-- NEWS -->
-      <div class="page" id="page-news">
-        <div class="page-header">
-          <div class="page-title"><small>AI-genererad</small>Nyheter · Onepager</div>
-          <div class="page-meta" id="newsDate"></div>
-        </div>
-        <div class="news-controls">
-          <div class="badge" id="newsBadge">Klicka på "Generera" för att hämta dagens nyheter</div>
-          <div class="btn-row">
-            <button class="btn-ghost">Exportera PDF</button>
-            <button class="btn" onclick="generateNews()">⟳ &nbsp;Generera nyheter</button>
-          </div>
-        </div>
-        <div id="newsContent">
-          <div style="text-align:center;padding:60px 20px;color:var(--muted);">
-            <div style="font-size:32px;margin-bottom:12px;">◎</div>
-            <div style="font-family:'DM Mono',monospace;font-size:11px;letter-spacing:0.1em;">Inga nyheter genererade ännu</div>
-            <div style="font-size:12px;margin-top:8px;color:var(--muted);">Lägg till bolag i portföljen och tryck på "Generera nyheter"</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- PORTFOLIO LIST -->
-      <div class="page" id="page-portfolio">
-        <div class="page-header">
-          <div class="page-title"><small>Portfölj</small>Alla bolag</div>
-          <button class="btn" onclick="openModal()">+ Lägg till bolag</button>
-        </div>
-        <div class="portfolio-list-grid" id="portfolioGrid"></div>
-      </div>
-
-      <!-- STOCK DETAIL -->
-      <div class="page" id="page-stock">
-        <div id="stockDetailContent"></div>
-      </div>
-
+    <div class="card">
+      <div class="card-title">Portfölj · Simulerad trend</div>
+      <div class="chart-area" id="chartBars"></div>
     </div>
   </div>
 </div>
 
-<!-- ADD STOCK MODAL -->
+<div class="page" id="page-onepager">
+  <div class="page-header">
+    <div class="ph-left"><small>Daglig AI-sammanfattning</small><div class="ph-title">Nyheter · Onepager</div></div>
+    <div class="ph-right" id="onepagerDate"></div>
+  </div>
+  <div class="onepager-controls">
+    <div class="onepager-badge" id="onepagerBadge">Generera för att hämta nyheter anpassade till din portfölj</div>
+    <div class="gap-8">
+      <button class="btn-ghost">Exportera PDF</button>
+      <button class="btn" onclick="generateOnepager()">⟳ Generera nyheter</button>
+    </div>
+  </div>
+  <div id="onepagerContent">
+    <div class="news-empty"><div class="news-empty-icon">◎</div><div class="news-empty-text">Inga nyheter genererade</div><div class="news-empty-sub">Lägg till bolag och tryck på "Generera nyheter"</div></div>
+  </div>
+</div>
+
+<div class="page" id="page-portfolio">
+  <div class="page-header">
+    <div class="ph-left"><small>Portfölj</small><div class="ph-title">Alla bolag</div></div>
+    <button class="btn" onclick="openModal()">+ Lägg till bolag</button>
+  </div>
+  <div class="pgrid" id="portfolioGrid"></div>
+</div>
+
+<div class="page" id="page-stock">
+  <div id="stockDetail"></div>
+</div>
+
+</div>
+</div>
+</div>
+
 <div class="modal-overlay" id="modalOverlay">
   <div class="modal">
     <div class="modal-title">Lägg till bolag</div>
-    <label>Bolagsnamn</label>
-    <input type="text" id="m-name" placeholder="t.ex. Ericsson">
-    <label>Ticker / Symbol</label>
-    <input type="text" id="m-ticker" placeholder="t.ex. ERIC B">
+    <label>Bolagsnamn *</label><input id="m-name" placeholder="t.ex. Ericsson">
+    <label>Ticker *</label><input id="m-ticker" placeholder="t.ex. ERIC B">
     <label>Börs</label>
     <select id="m-exchange">
-      <option value="Stockholmsbörsen 🇸🇪">Stockholmsbörsen 🇸🇪</option>
-      <option value="NASDAQ 🇺🇸">NASDAQ 🇺🇸</option>
-      <option value="NYSE 🇺🇸">NYSE 🇺🇸</option>
-      <option value="Annan">Annan</option>
+      <option>Stockholmsbörsen 🇸🇪</option><option>NASDAQ 🇺🇸</option><option>NYSE 🇺🇸</option><option>Annan</option>
     </select>
-    <label>Aktuell kurs (valfritt)</label>
-    <input type="text" id="m-price" placeholder="t.ex. 80.42">
+    <label>Aktuell kurs</label><input id="m-price" placeholder="t.ex. 80.42">
     <div class="modal-btns">
       <button class="btn-ghost" onclick="closeModal()">Avbryt</button>
       <button class="btn" onclick="addStock()">Lägg till</button>
@@ -360,356 +324,256 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 </div>
 
 <script>
-// ── STATE ──
-let stocks = [];
-let activeStockId = null;
-let currentNavEl = null;
+let stocks=[], activeId=null, activeTab='anteckningar', noteFilter='all';
+const CAT_LABELS={financial:'Finansiellt',market:'Marknadsinsikt',risk:'Risk',macro:'Makro',misc:'Övrigt'};
+const CAT_COLORS={financial:'var(--cat-financial)',market:'var(--cat-market)',risk:'var(--cat-risk)',macro:'var(--cat-macro)',misc:'var(--cat-misc)'};
+const TD=[{sym:'ERIC B',p:'80.42',c:'+1.2%',pos:true},{sym:'INVE A',p:'212.60',c:'-0.4%',pos:false},{sym:'SEB A',p:'143.85',c:'+0.8%',pos:true},{sym:'AAPL',p:'$228.40',c:'+0.3%',pos:true},{sym:'NVDA',p:'$892.10',c:'+2.1%',pos:true},{sym:'MSFT',p:'$415.30',c:'-0.2%',pos:false},{sym:'OMXS30',p:'2 340',c:'+0.5%',pos:true},{sym:'USD/SEK',p:'10.42',c:'+0.1%',pos:true}];
 
-// Load from storage
-async function loadData() {
-  try {
-    const r = await window.storage.get('portfoljapp-stocks');
-    if (r) stocks = JSON.parse(r.value);
-  } catch(e) { stocks = []; }
-  renderAll();
-}
+async function load(){try{const r=await window.storage.get('pv3-stocks');if(r)stocks=JSON.parse(r.value);}catch(e){stocks=[];}boot();}
+async function save(){try{await window.storage.set('pv3-stocks',JSON.stringify(stocks));}catch(e){}}
 
-async function saveData() {
-  try { await window.storage.set('portfoljapp-stocks', JSON.stringify(stocks)); } catch(e){}
-}
+function buildTicker(){const t=document.getElementById('tickerTrack');t.innerHTML=[...TD,...TD].map(d=>`<div class="t-item"><span class="t-sym">${d.sym}</span><span class="t-price">${d.p}</span><span class="${d.pos?'t-pos':'t-neg'}">${d.c}</span></div><span style="color:var(--border2);padding:0 4px">·</span>`).join('');}
 
-// ── TICKER ──
-const TICKER_DATA = [
-  {sym:'ERIC B', price:'80.42', chg:'+1.2%', pos:true},
-  {sym:'INVE A', price:'212.60', chg:'-0.4%', pos:false},
-  {sym:'SEB A', price:'143.85', chg:'+0.8%', pos:true},
-  {sym:'AAPL', price:'$228.40', chg:'+0.3%', pos:true},
-  {sym:'NVDA', price:'$892.10', chg:'+2.1%', pos:true},
-  {sym:'MSFT', price:'$415.30', chg:'-0.2%', pos:false},
-  {sym:'OMXS30', price:'2 340.5', chg:'+0.5%', pos:true},
-  {sym:'HM B', price:'148.20', chg:'-1.1%', pos:false},
-  {sym:'USD/SEK', price:'10.42', chg:'+0.1%', pos:true},
-];
-function buildTicker() {
-  const t = document.getElementById('tickerTrack');
-  const items = [...TICKER_DATA, ...TICKER_DATA];
-  t.innerHTML = items.map(d=>`
-    <div class="t-item">
-      <span class="t-sym">${d.sym}</span>
-      <span class="t-price">${d.price}</span>
-      <span class="${d.pos?'t-pos':'t-neg'}">${d.chg}</span>
-    </div><span class="t-div">·</span>
-  `).join('');
-}
-
-// ── NAV ──
-function nav(page, el) {
+function navPage(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.getElementById('page-'+page).classList.add('active');
-  document.querySelectorAll('.nav-item,.stock-nav-item').forEach(n=>n.classList.remove('active'));
-  if(el){ el.classList.add('active'); currentNavEl=el; }
-  if(page==='dashboard') renderDashboard();
-  if(page==='portfolio') renderPortfolioGrid();
-  if(page==='news') renderNewsDate();
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item,.stock-nav').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  if(id==='dashboard')renderDash();
+  if(id==='portfolio')renderPortfolioGrid();
+  if(id==='onepager'){document.getElementById('onepagerDate').innerHTML=new Date().toLocaleDateString('sv-SE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).toUpperCase();}
 }
-
-function navToStock(id, el) {
-  activeStockId = id;
+function navStock(id,el){
+  activeId=id;activeTab='anteckningar';noteFilter='all';
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.getElementById('page-stock').classList.add('active');
-  document.querySelectorAll('.nav-item,.stock-nav-item').forEach(n=>n.classList.remove('active'));
-  if(el) el.classList.add('active');
-  renderStockPage(id);
+  document.querySelectorAll('.nav-item,.stock-nav').forEach(n=>n.classList.remove('active'));
+  if(el)el.classList.add('active');
+  else{document.querySelectorAll('.stock-nav').forEach(n=>{if(n.onclick&&n.getAttribute('onclick')&&n.getAttribute('onclick').includes(id))n.classList.add('active');});}
+  renderStockPage();
+}
+function renderSidebarStocks(){
+  document.getElementById('stockNav').innerHTML=stocks.map(s=>`<div class="stock-nav${activeId===s.id?' active':''}" onclick="navStock('${s.id}',this)"><span style="font-size:11px">${s.exchange.includes('🇸🇪')?'🇸🇪':'🇺🇸'}</span><span class="stock-nav-name">${s.name}</span>${s.price?`<span class="stock-nav-price">${s.price}</span>`:''}</div>`).join('');
+}
+function renderDash(){
+  const now=new Date();
+  document.getElementById('dashDate').innerHTML=now.toLocaleDateString('sv-SE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).toUpperCase();
+  const se=stocks.filter(s=>s.exchange.includes('🇸🇪')).length,us=stocks.length-se;
+  document.getElementById('s-count').textContent=stocks.length;
+  document.getElementById('s-break').textContent=`${se} SE · ${us} US`;
+  document.getElementById('s-thesis').textContent=stocks.filter(s=>s.thesis&&s.thesis.trim().length>5).length;
+  document.getElementById('s-notes').textContent=stocks.reduce((a,s)=>a+(s.notes||[]).length,0);
+  document.getElementById('s-news').textContent=stocks.reduce((a,s)=>a+(s.news||[]).length,0);
+  const tbody=document.getElementById('dashTableBody');
+  tbody.innerHTML=stocks.length?stocks.map(s=>`<tr onclick="navStock('${s.id}')"><td><div class="sn">${s.exchange.includes('🇸🇪')?'🇸🇪':'🇺🇸'} ${s.name}</div></td><td><div class="st">${s.ticker}</div></td><td style="font-size:10px;color:var(--muted2)">${s.exchange.replace(/🇸🇪|🇺🇸/g,'').trim()}</td><td>${s.price||'—'}</td></tr>`).join(''):`<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted)">Inga bolag ännu — tryck + i menyn</td></tr>`;
+  const chart=document.getElementById('chartBars'),vals=[55,60,57,65,70,68,75,72,80,77,85,82,88,84,92,88,95,91,98,94,100,97,104,101],mn=Math.min(...vals),mx=Math.max(...vals);
+  chart.innerHTML=vals.map((v,i)=>`<div class="bar${i===vals.length-1?' hi':''}" style="height:${((v-mn)/(mx-mn)*68+10).toFixed(1)}px"></div>`).join('');
+}
+function renderPortfolioGrid(){
+  document.getElementById('portfolioGrid').innerHTML=stocks.map(s=>`<div class="pgrid-card" onclick="navStock('${s.id}')"><div class="pgc-top"><div><div class="pgc-name">${s.exchange.includes('🇸🇪')?'🇸🇪':'🇺🇸'} ${s.name}</div><div class="pgc-ticker">${s.ticker}</div></div><div class="pgc-price">${s.price||'—'}</div></div><div class="pgc-thesis">${s.thesis||'Ingen grundtes ännu...'}</div><div class="pgc-stats"><span class="pgc-stat">${(s.notes||[]).length} noter</span><span class="pgc-stat">${(s.news||[]).length} nyheter</span>${(s.tags||[]).slice(0,2).map(t=>`<span class="pgc-stat">${t}</span>`).join('')}</div></div>`).join('')+`<div class="pgrid-card pgc-add" onclick="openModal()">+ Lägg till bolag</div>`;
 }
 
-// ── RENDER SIDEBAR STOCKS ──
-function renderSidebarStocks() {
-  const container = document.getElementById('stockNavItems');
-  container.innerHTML = stocks.map(s => `
-    <div class="stock-nav-item ${activeStockId===s.id?'active':''}" onclick="navToStock('${s.id}',this)">
-      <span class="nav-flag">${s.exchange.includes('🇸🇪')?'🇸🇪':'🇺🇸'}</span>
-      <span class="stock-nav-name">${s.name}</span>
-      <span class="stock-nav-chg ${s.price?'pos':''}">${s.price||''}</span>
+function renderStockPage(){
+  const s=stocks.find(x=>x.id===activeId);if(!s)return;
+  const flag=s.exchange.includes('🇸🇪')?'🇸🇪':'🇺🇸';
+  document.getElementById('stockDetail').innerHTML=`
+<div class="stock-hero">
+  <div>
+    <span class="sh-flag">${flag}</span>
+    <div class="sh-name">${s.name}</div>
+    <div class="sh-meta"><span class="sh-meta-item">${s.ticker}</span><span class="sh-meta-item">·</span><span class="sh-meta-item">${s.exchange}</span>${s.sector?`<span class="sh-meta-item">·</span><span class="sh-meta-item">${s.sector}</span>`:''}</div>
+  </div>
+  <div class="sh-right">
+    <div class="sh-price">${s.price||'—'}</div>
+    <div style="margin-top:8px"><button class="btn-ghost btn-sm" onclick="promptEditPrice()">Uppdatera kurs</button></div>
+  </div>
+</div>
+<div class="stock-tags" id="stockTags">${renderTags(s)}</div>
+<div class="stock-tabs">
+  <div class="stab${activeTab==='anteckningar'?' active':''}" onclick="switchTab('anteckningar',this)">📝 Anteckningar</div>
+  <div class="stab${activeTab==='nyheter'?' active':''}" onclick="switchTab('nyheter',this)">📰 Nyheter</div>
+  <div class="stab${activeTab==='bullbear'?' active':''}" onclick="switchTab('bullbear',this)">↑↓ Bull / Bear</div>
+  <div class="stab${activeTab==='nyckeltal'?' active':''}" onclick="switchTab('nyckeltal',this)">◈ Nyckeltal</div>
+  <div class="stab${activeTab==='källor'?' active':''}" onclick="switchTab('källor',this)">⊞ Källor</div>
+</div>
+
+<div class="tab-content${activeTab==='anteckningar'?' active':''}" id="tab-anteckningar">
+  <div class="thesis-box">
+    <div class="thesis-header"><span class="thesis-label">⬡ Grundtes — Varför äger jag detta bolag?</span></div>
+    <textarea class="thesis-textarea" id="thesis-input" placeholder="Skriv din grundtes här. Varför köpte du bolaget? Vad är din övertygelse? Vad krävs för att tesen ska hålla?">${s.thesis||''}</textarea>
+    <div class="thesis-footer"><span class="save-status" id="thesis-saved">Sparas när du trycker "Spara"</span><button class="btn btn-sm" onclick="saveThesis()">Spara grundtes</button></div>
+  </div>
+  <div class="notes-toolbar">
+    <span class="notes-title">Löpande anteckningar</span>
+    <div class="cat-filters">
+      <div class="cat-filter active" data-cat="all" onclick="filterNotes('all',this)">Alla</div>
+      <div class="cat-filter" data-cat="financial" onclick="filterNotes('financial',this)">💹 Finansiellt</div>
+      <div class="cat-filter" data-cat="market" onclick="filterNotes('market',this)">🌐 Marknad</div>
+      <div class="cat-filter" data-cat="risk" onclick="filterNotes('risk',this)">⚠️ Risk</div>
+      <div class="cat-filter" data-cat="macro" onclick="filterNotes('macro',this)">🌍 Makro</div>
     </div>
-  `).join('');
-}
-
-// ── DASHBOARD ──
-function renderDashboard() {
-  // Date
-  const now = new Date();
-  document.getElementById('dashDate').innerHTML = now.toLocaleDateString('sv-SE',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase();
-  document.getElementById('newsDate').innerHTML = now.toLocaleDateString('sv-SE',{day:'numeric',month:'long',year:'numeric'}).toUpperCase();
-
-  const se = stocks.filter(s=>s.exchange.includes('🇸🇪')).length;
-  const us = stocks.filter(s=>!s.exchange.includes('🇸🇪')).length;
-  document.getElementById('holdingCount').textContent = stocks.length;
-  document.getElementById('holdingBreak').textContent = `${se} SE · ${us} US`;
-  const withNotes = stocks.filter(s=>s.notes && s.notes.trim().length>10).length;
-  document.getElementById('noteCount').textContent = withNotes;
-  document.getElementById('lastUpdated').textContent = now.toLocaleTimeString('sv-SE',{hour:'2-digit',minute:'2-digit'});
-
-  // Table
-  const tbody = document.getElementById('dashTableBody');
-  if(stocks.length === 0) {
-    tbody.innerHTML = `<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted);">Inga bolag ännu — lägg till via menyn</td></tr>`;
-    document.getElementById('totalValue').textContent = '0 kr';
-  } else {
-    tbody.innerHTML = stocks.map(s=>`
-      <tr onclick="navToStock('${s.id}')">
-        <td><div class="sn">${s.exchange.includes('🇸🇪')?'🇸🇪':'🇺🇸'} ${s.name}</div><div class="st">${s.ticker}</div></td>
-        <td>${s.price||'—'}</td>
-        <td style="font-size:10px;color:var(--muted2)">${s.exchange.replace(/🇸🇪|🇺🇸/g,'').trim()}</td>
-        <td>—</td>
-      </tr>
-    `).join('');
-    document.getElementById('totalValue').textContent = '—';
-  }
-
-  // Chart bars
-  const chart = document.getElementById('chartBars');
-  const vals = [55,60,57,65,62,70,68,75,72,80,77,82,80,88,84,92,88,95,91,98,94,100,97,103];
-  chart.innerHTML = vals.map((v,i)=>{
-    const mn=Math.min(...vals),mx=Math.max(...vals);
-    const h = ((v-mn)/(mx-mn)*70+12).toFixed(1);
-    return `<div class="bar ${i===vals.length-1?'hi':''}" style="height:${h}px"></div>`;
-  }).join('');
-}
-
-// ── PORTFOLIO GRID ──
-function renderPortfolioGrid() {
-  const g = document.getElementById('portfolioGrid');
-  const cards = stocks.map(s=>`
-    <div class="plc" onclick="navToStock('${s.id}')">
-      <div class="plc-top">
-        <div>
-          <div class="plc-name">${s.exchange.includes('🇸🇪')?'🇸🇪':'🇺🇸'} ${s.name}</div>
-          <div class="plc-ticker">${s.ticker} · ${s.exchange.replace(/🇸🇪|🇺🇸/g,'').trim()}</div>
-        </div>
-        <div class="plc-price pos">${s.price||'—'}</div>
-      </div>
-      <div class="plc-notes">${s.notes ? s.notes.substring(0,80)+'...' : 'Inga anteckningar ännu'}</div>
+  </div>
+  <div class="add-note-form" id="addNoteForm">
+    <div class="form-row">
+      <input class="form-input" id="note-title" placeholder="Titel...">
+      <select class="form-select" id="note-cat">
+        <option value="financial">💹 Finansiellt mål/resultat</option>
+        <option value="market">🌐 Marknadsinsikt</option>
+        <option value="risk">⚠️ Risk</option>
+        <option value="macro">🌍 Makro / Ledande indikator</option>
+        <option value="misc">📌 Övrigt</option>
+      </select>
     </div>
-  `).join('');
-  g.innerHTML = cards + `<div class="plc plc-add" onclick="openModal()">+ Lägg till bolag</div>`;
-}
+    <textarea class="form-textarea" id="note-body" placeholder="Din anteckning..."></textarea>
+    <div class="gap-8"><button class="btn btn-sm" onclick="saveNewNote()">Spara anteckning</button><button class="btn-ghost btn-sm" onclick="toggleAddNote()">Avbryt</button></div>
+  </div>
+  <div style="margin-bottom:14px"><button class="btn btn-sm" onclick="toggleAddNote()">+ Ny anteckning</button></div>
+  <div id="notesList">${renderNotesList(s)}</div>
+</div>
 
-// ── STOCK PAGE ──
-function renderStockPage(id) {
-  const s = stocks.find(x=>x.id===id);
-  if(!s) return;
-  const flag = s.exchange.includes('🇸🇪')?'🇸🇪':'🇺🇸';
-  document.getElementById('stockDetailContent').innerHTML = `
-    <div class="stock-hero">
-      <div class="sh-left">
-        <div class="sh-name">${flag} ${s.name}</div>
-        <div class="sh-meta">
-          <span>${s.ticker}</span>
-          <span>·</span>
-          <span>${s.exchange}</span>
-          ${s.sector?`<span>·</span><span>${s.sector}</span>`:''}
-        </div>
-      </div>
-      <div class="sh-right">
-        <div class="sh-price">${s.price||'—'}</div>
-        <div class="sh-change pos">Uppdatera kurs nedan</div>
-      </div>
+<div class="tab-content${activeTab==='nyheter'?' active':''}" id="tab-nyheter">
+  <div class="news-tab-header">
+    <span class="news-tab-title">Nyheter & insikter — ${s.name}</span>
+    <div class="gap-8">
+      <button class="btn-ghost btn-sm" onclick="toggleAddNews()">+ Lägg till</button>
+      <button class="btn btn-sm" onclick="alert('Koppla in Claude API för automatiska nyheter!')">⟳ Hämta AI-nyheter</button>
     </div>
-
-    <div class="editor-tabs">
-      <div class="etab active" onclick="switchTab('notes',this)">📝 Anteckningar</div>
-      <div class="etab" onclick="switchTab('bull',this)">↑ Bull-case</div>
-      <div class="etab" onclick="switchTab('bear',this)">↓ Bear-case</div>
-      <div class="etab" onclick="switchTab('info',this)">◈ Nyckeltal</div>
-      <div class="etab" onclick="switchTab('sources',this)">⊞ Källor</div>
+  </div>
+  <div class="add-news-form" id="addNewsForm">
+    <div class="form-row">
+      <input class="form-input" id="news-title" placeholder="Rubrik...">
+      <select class="form-select" id="news-impact">
+        <option value="h">🔴 Hög påverkan</option>
+        <option value="m">🟡 Medel påverkan</option>
+        <option value="l">🟢 Positiv signal</option>
+      </select>
     </div>
-
-    <div class="editor-content active" id="tab-notes">
-      <textarea class="note-editor" id="note-main" placeholder="Skriv dina anteckningar och analys om ${s.name} här...">${s.notes||''}</textarea>
-      <div class="save-bar">
-        <span class="save-hint" id="save-hint-notes">Osparad</span>
-        <button class="btn" onclick="saveNote('notes')">Spara</button>
-      </div>
-      <div class="tag-editor" id="tagEditor">
-        ${(s.tags||[]).map(t=>`<div class="tag-editable" onclick="removeTag('${id}','${t}')">${t}<span class="tag-x">×</span></div>`).join('')}
-        <input class="tag-add-input" placeholder="+ Ny tagg" id="tagInput" onkeydown="handleTagInput(event,'${id}')">
-      </div>
+    <textarea class="form-textarea" id="news-body" placeholder="Din sammanfattning eller analys av nyheten..."></textarea>
+    <div class="form-row" style="margin-bottom:10px">
+      <input class="form-input" id="news-url" placeholder="Länk till källa (valfritt)">
+      <input class="form-input" id="news-tags-input" placeholder="Taggar, kommaseparerade">
     </div>
+    <div class="gap-8"><button class="btn btn-sm" onclick="saveNews()">Spara nyhet</button><button class="btn-ghost btn-sm" onclick="toggleAddNews()">Avbryt</button></div>
+  </div>
+  <div id="newsList">${renderNewsList(s)}</div>
+</div>
 
-    <div class="editor-content" id="tab-bull">
-      <textarea class="note-editor" id="note-bull" placeholder="Varför är det ett köpläge? Vilka katalysatorer finns? Vad är uppsidan?">${s.bull||''}</textarea>
-      <div class="save-bar">
-        <span class="save-hint" id="save-hint-bull">Osparad</span>
-        <button class="btn" onclick="saveNote('bull')">Spara</button>
-      </div>
+<div class="tab-content${activeTab==='bullbear'?' active':''}" id="tab-bullbear">
+  <div class="bull-bear-grid">
+    <div class="bb-card bb-bull">
+      <div class="bb-header"><span class="bb-icon">↑</span><span class="bb-label">Bull-case</span></div>
+      <div class="bb-body"><textarea class="bb-textarea" id="bull-input" placeholder="Katalysatorer? Varför stiger kursen? Vad är max-uppsidan?">${s.bull||''}</textarea><button class="btn btn-sm" onclick="saveBullBear('bull')">Spara</button></div>
     </div>
-
-    <div class="editor-content" id="tab-bear">
-      <textarea class="note-editor" id="note-bear" placeholder="Vilka risker finns? Vad kan gå fel? Vad är nedsidan?">${s.bear||''}</textarea>
-      <div class="save-bar">
-        <span class="save-hint" id="save-hint-bear">Osparad</span>
-        <button class="btn" onclick="saveNote('bear')">Spara</button>
-      </div>
+    <div class="bb-card bb-bear">
+      <div class="bb-header"><span class="bb-icon">↓</span><span class="bb-label">Bear-case</span></div>
+      <div class="bb-body"><textarea class="bb-textarea" id="bear-input" placeholder="Risker? Vad kan gå fel? Vad är max-nedsidan?">${s.bear||''}</textarea><button class="btn btn-sm" onclick="saveBullBear('bear')">Spara</button></div>
     </div>
+  </div>
+</div>
 
-    <div class="editor-content" id="tab-info">
-      <div class="info-grid">
-        ${[
-          ['Aktuell kurs','price',s.price||''],
-          ['P/E-tal','pe',s.pe||''],
-          ['Direktavkastning','yield',s.yield||''],
-          ['Börsvärde','marketcap',s.marketcap||''],
-          ['Sektor','sector',s.sector||''],
-          ['Antal aktier','shares',s.shares||''],
-        ].map(([label,key,val])=>`
-          <div class="info-cell">
-            <div class="ic-label">${label}</div>
-            <input class="ic-input" value="${val}" placeholder="—" onchange="updateField('${id}','${key}',this.value)">
-          </div>
-        `).join('')}
-      </div>
-      <div style="margin-top:14px">
-        <button class="btn" onclick="saveFields()">Spara nyckeltal</button>
-      </div>
-    </div>
+<div class="tab-content${activeTab==='nyckeltal'?' active':''}" id="tab-nyckeltal">
+  <div class="kpi-grid">
+    ${[['Aktuell kurs','price'],['P/E-tal','pe'],['Direktavkastning','div_yield'],['Börsvärde','marketcap'],['Sektor','sector'],['EV/EBITDA','ev_ebitda'],['Omsättningstillväxt','rev_growth'],['Rörelsemarginal','op_margin'],['Nettoskuld/EBITDA','net_debt']].map(([lbl,key])=>`<div class="kpi-cell"><div class="kpi-lbl">${lbl}</div><input class="kpi-input" value="${s[key]||''}" placeholder="—" onchange="updateKpi('${key}',this.value)"></div>`).join('')}
+  </div>
+  <button class="btn btn-sm" onclick="saveKpis()">Spara nyckeltal</button>
+</div>
 
-    <div class="editor-content" id="tab-sources">
-      <textarea class="note-editor" id="note-sources" placeholder="Klistra in länkar, rapporter, analyser eller anteckna var du hittat din information...">${s.sources||''}</textarea>
-      <div class="save-bar">
-        <span class="save-hint" id="save-hint-sources">Osparad</span>
-        <button class="btn" onclick="saveNote('sources')">Spara</button>
-      </div>
-    </div>
-  `;
+<div class="tab-content${activeTab==='källor'?' active':''}" id="tab-källor">
+  <div class="card-title" style="margin-bottom:10px">Länkar, rapporter & källor</div>
+  <textarea class="sources-textarea" id="sources-input" placeholder="Klistra in länkar, rapportnoteringar, analytiker-kommentarer...&#10;&#10;Ex:&#10;https://investors.ericsson.com&#10;Q4 2025 — stark ordertillväxt i Indien&#10;Morgan Stanley höjer riktkurs till 95 kr">${s.sources||''}</textarea>
+  <div style="margin-top:10px"><button class="btn btn-sm" onclick="saveSources()">Spara</button></div>
+</div>`;
 }
 
-function switchTab(name, el) {
-  document.querySelectorAll('.etab').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.editor-content').forEach(c=>c.classList.remove('active'));
-  if(el) el.classList.add('active');
-  document.getElementById('tab-'+name).classList.add('active');
+function renderTags(s){return(s.tags||[]).map(t=>`<div class="stag">${t}<span class="stag-x" onclick="removeTag('${t}')">×</span></div>`).join('')+`<div class="stag stag-add" onclick="startTagInput()">+ Tagg</div>`;}
+
+function renderNotesList(s){
+  const notes=(s.notes||[]).filter(n=>noteFilter==='all'||n.cat===noteFilter);
+  if(!notes.length)return`<div style="text-align:center;padding:30px;color:var(--muted);font-size:12px">Inga anteckningar${noteFilter!=='all'?' i denna kategori':' ännu'} — tryck "+ Ny anteckning"</div>`;
+  return notes.map(n=>`<div class="note-card"><div class="note-card-header" onclick="toggleNote(this)"><div class="note-cat-dot" data-cat="${n.cat}"></div><div class="note-card-title">${n.title}</div><div class="note-card-meta"><span style="color:${CAT_COLORS[n.cat]||'var(--muted2)'}">${CAT_LABELS[n.cat]||n.cat}</span><span>${n.date||''}</span><span>▾</span></div></div><div class="note-card-body" id="nbody-${n.id}"><textarea class="note-textarea" onchange="updateNoteBody('${n.id}',this.value)">${n.body}</textarea><div class="note-card-actions"><button class="btn btn-sm" onclick="saveNoteEdit('${n.id}',this)">Spara</button><button class="btn-ghost btn-sm" onclick="deleteNote('${n.id}')">Ta bort</button></div></div></div>`).join('');
 }
 
-function saveNote(field) {
-  const s = stocks.find(x=>x.id===activeStockId);
-  if(!s) return;
-  const fieldMap = {notes:'note-main',bull:'note-bull',bear:'note-bear',sources:'note-sources'};
-  s[field] = document.getElementById(fieldMap[field]).value;
-  saveData();
-  renderSidebarStocks();
-  const hint = document.getElementById('save-hint-'+field);
-  if(hint){ hint.textContent = 'Sparad ✓'; hint.style.color='var(--accent)'; setTimeout(()=>{hint.textContent='Osparad';hint.style.color='';},2000); }
+function renderNewsList(s){
+  const news=s.news||[];
+  if(!news.length)return`<div class="news-empty"><div class="news-empty-icon">📰</div><div class="news-empty-text">Inga nyheter sparade</div><div class="news-empty-sub">Lägg till manuellt eller koppla in API</div></div>`;
+  return news.map(n=>`<div class="news-card"><div class="nc-top"><div class="nc-title">${n.title}</div><div class="nc-badge ${n.impact==='h'?'nb-h':n.impact==='m'?'nb-m':'nb-l'}">${n.impact==='h'?'HÖG PÅVERKAN':n.impact==='m'?'MEDEL':'POSITIV'}</div></div><div class="nc-body">${n.body}</div><div class="nc-footer"><div class="nc-tags">${(n.tags||[]).map(t=>`<span class="nc-tag">${t}</span>`).join('')}</div><div style="display:flex;align-items:center;gap:8px"><span class="nc-meta">${n.date||''}</span><span class="nc-delete" onclick="deleteNews('${n.id}')">✕</span></div></div>${n.url?`<a class="nc-link" href="${n.url}" target="_blank">↗ Läs originalkälla</a>`:''}</div>`).join('');
 }
 
-function updateField(id, key, val) {
-  const s = stocks.find(x=>x.id===id);
-  if(s) s[key] = val;
+function switchTab(tab,el){
+  activeTab=tab;
+  document.querySelectorAll('.stab').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-content').forEach(c=>c.classList.remove('active'));
+  if(el)el.classList.add('active');
+  const tc=document.getElementById('tab-'+tab);if(tc)tc.classList.add('active');
 }
-function saveFields() {
-  saveData();
-  renderSidebarStocks();
+function saveThesis(){const s=stocks.find(x=>x.id===activeId);if(!s)return;s.thesis=document.getElementById('thesis-input').value;save();renderSidebarStocks();const el=document.getElementById('thesis-saved');if(el){el.textContent='Sparad ✓';el.classList.add('saved');setTimeout(()=>{el.textContent='Sparas när du trycker "Spara"';el.classList.remove('saved');},2000);}}
+function toggleAddNote(){const f=document.getElementById('addNoteForm');f.classList.toggle('open');if(f.classList.contains('open'))document.getElementById('note-title').focus();}
+function saveNewNote(){
+  const s=stocks.find(x=>x.id===activeId);if(!s)return;
+  const title=document.getElementById('note-title').value.trim(),body=document.getElementById('note-body').value.trim();
+  if(!title&&!body)return;
+  if(!s.notes)s.notes=[];
+  s.notes.unshift({id:'n'+Date.now(),title:title||'Utan titel',body,cat:document.getElementById('note-cat').value,date:new Date().toLocaleDateString('sv-SE')});
+  save();document.getElementById('note-title').value='';document.getElementById('note-body').value='';
+  document.getElementById('addNoteForm').classList.remove('open');
+  document.getElementById('notesList').innerHTML=renderNotesList(stocks.find(x=>x.id===activeId));
 }
-
-function handleTagInput(e, id) {
-  if(e.key==='Enter' || e.key===',') {
-    e.preventDefault();
-    const val = e.target.value.trim().replace(',','');
-    if(!val) return;
-    const s = stocks.find(x=>x.id===id);
-    if(!s.tags) s.tags=[];
-    if(!s.tags.includes(val)) { s.tags.push(val); saveData(); renderStockPage(id); }
-    e.target.value='';
-  }
+function toggleNote(el){const body=el.nextElementSibling;body.classList.toggle('open');el.querySelector('span:last-child').textContent=body.classList.contains('open')?'▴':'▾';}
+function filterNotes(cat,el){noteFilter=cat;document.querySelectorAll('.cat-filter').forEach(f=>f.classList.remove('active'));el.classList.add('active');const s=stocks.find(x=>x.id===activeId);if(s)document.getElementById('notesList').innerHTML=renderNotesList(s);}
+function updateNoteBody(id,val){const s=stocks.find(x=>x.id===activeId);if(!s)return;const n=(s.notes||[]).find(x=>x.id===id);if(n)n.body=val;}
+function saveNoteEdit(id,btn){save();const b=btn||event.target;b.textContent='Sparad ✓';setTimeout(()=>{b.textContent='Spara';},1500);}
+function deleteNote(id){const s=stocks.find(x=>x.id===activeId);if(!s)return;s.notes=(s.notes||[]).filter(n=>n.id!==id);save();document.getElementById('notesList').innerHTML=renderNotesList(s);}
+function toggleAddNews(){const f=document.getElementById('addNewsForm');f.classList.toggle('open');if(f.classList.contains('open'))document.getElementById('news-title').focus();}
+function saveNews(){
+  const s=stocks.find(x=>x.id===activeId);if(!s)return;
+  const title=document.getElementById('news-title').value.trim();if(!title)return;
+  if(!s.news)s.news=[];
+  const tags=document.getElementById('news-tags-input').value.split(',').map(t=>t.trim()).filter(Boolean);
+  s.news.unshift({id:'nw'+Date.now(),title,body:document.getElementById('news-body').value,impact:document.getElementById('news-impact').value,url:document.getElementById('news-url').value,tags,date:new Date().toLocaleDateString('sv-SE')});
+  save();['news-title','news-body','news-url','news-tags-input'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  document.getElementById('addNewsForm').classList.remove('open');
+  document.getElementById('newsList').innerHTML=renderNewsList(stocks.find(x=>x.id===activeId));
 }
-function removeTag(id, tag) {
-  const s = stocks.find(x=>x.id===id);
-  if(s && s.tags) { s.tags = s.tags.filter(t=>t!==tag); saveData(); renderStockPage(id); }
+function deleteNews(id){const s=stocks.find(x=>x.id===activeId);if(!s)return;s.news=(s.news||[]).filter(n=>n.id!==id);save();document.getElementById('newsList').innerHTML=renderNewsList(s);}
+function saveBullBear(key){const s=stocks.find(x=>x.id===activeId);if(!s)return;s[key]=document.getElementById(key+'-input').value;save();const btn=event.target;btn.textContent='Sparad ✓';setTimeout(()=>{btn.textContent='Spara';},1500);}
+function updateKpi(key,val){const s=stocks.find(x=>x.id===activeId);if(s)s[key]=val;}
+function saveKpis(){save();renderSidebarStocks();const btn=event.target;btn.textContent='Sparad ✓';setTimeout(()=>{btn.textContent='Spara nyckeltal';},1500);}
+function saveSources(){const s=stocks.find(x=>x.id===activeId);if(s){s.sources=document.getElementById('sources-input').value;save();const btn=event.target;btn.textContent='Sparad ✓';setTimeout(()=>{btn.textContent='Spara';},1500);}}
+function promptEditPrice(){const s=stocks.find(x=>x.id===activeId);if(!s)return;const p=prompt(`Ny kurs för ${s.name}:`,s.price||'');if(p!==null){s.price=p.trim();save();renderSidebarStocks();renderStockPage();}}
+function removeTag(tag){const s=stocks.find(x=>x.id===activeId);if(s){s.tags=(s.tags||[]).filter(t=>t!==tag);save();document.getElementById('stockTags').innerHTML=renderTags(s);}}
+function startTagInput(){
+  const s=stocks.find(x=>x.id===activeId);if(!s)return;
+  const container=document.getElementById('stockTags'),addBtn=container.querySelector('.stag-add');
+  const inp=document.createElement('input');inp.className='tag-input-inline';inp.placeholder='Ny tagg...';
+  addBtn.replaceWith(inp);inp.focus();
+  inp.onkeydown=e=>{if(e.key==='Enter'||e.key===','){e.preventDefault();const v=inp.value.trim();if(v){if(!s.tags)s.tags=[];if(!s.tags.includes(v))s.tags.push(v);save();}container.innerHTML=renderTags(s);}if(e.key==='Escape')container.innerHTML=renderTags(s);};
+  inp.onblur=()=>setTimeout(()=>{if(document.contains(inp))container.innerHTML=renderTags(s);},200);
 }
-
-// ── MODAL ──
-function openModal() { document.getElementById('modalOverlay').classList.add('open'); document.getElementById('m-name').focus(); }
-function closeModal() { document.getElementById('modalOverlay').classList.remove('open'); }
-
-function addStock() {
-  const name = document.getElementById('m-name').value.trim();
-  const ticker = document.getElementById('m-ticker').value.trim().toUpperCase();
-  const exchange = document.getElementById('m-exchange').value;
-  const price = document.getElementById('m-price').value.trim();
-  if(!name || !ticker) return;
-  const stock = {
-    id: 'stock-'+Date.now(),
-    name, ticker, exchange, price,
-    notes:'', bull:'', bear:'', sources:'',
-    tags:[], pe:'', yield:'', marketcap:'', sector:'', shares:''
-  };
-  stocks.push(stock);
-  saveData();
-  closeModal();
-  document.getElementById('m-name').value='';
-  document.getElementById('m-ticker').value='';
-  document.getElementById('m-price').value='';
-  renderAll();
-  navToStock(stock.id);
-}
-
-// ── NEWS ──
-function renderNewsDate() {
-  const now = new Date();
-  document.getElementById('newsDate').innerHTML = now.toLocaleDateString('sv-SE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).toUpperCase();
-}
-
-function generateNews() {
-  if(stocks.length === 0) {
-    document.getElementById('newsContent').innerHTML = `<div style="text-align:center;padding:40px;color:var(--muted);font-size:13px;">Lägg till bolag i portföljen först!</div>`;
-    return;
-  }
-  const names = stocks.map(s=>s.name+' ('+s.ticker+')').join(', ');
-  document.getElementById('newsBadge').textContent = 'Genererar nyheter med AI...';
-  document.getElementById('newsContent').innerHTML = `<div style="text-align:center;padding:60px;color:var(--muted);"><div style="font-size:24px;margin-bottom:12px;animation:spin 1s linear infinite;display:inline-block;">◌</div><br>Hämtar nyheter för ${stocks.length} bolag...</div>`;
-
-  // Demo news (in a real version this would call Claude API)
+function generateOnepager(){
+  if(!stocks.length){document.getElementById('onepagerContent').innerHTML=`<div class="news-empty"><div class="news-empty-icon">◎</div><div class="news-empty-text">Lägg till bolag först</div></div>`;return;}
+  document.getElementById('onepagerBadge').textContent='Genererar...';
+  document.getElementById('onepagerContent').innerHTML=`<div style="text-align:center;padding:60px;color:var(--muted)"><div style="font-size:24px;display:inline-block;animation:spin 1s linear infinite">◌</div><br><br>Analyserar ${stocks.length} bolag...</div>`;
   setTimeout(()=>{
-    const now = new Date();
-    document.getElementById('newsBadge').textContent = `Genererad ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')} · ${stocks.length} bolag bevakade`;
-    const demoNews = [
-      {title:`Makro: Federal Reserve håller räntan oförändrad`, body:`Fed-protokoll visar splittrad syn på takten för kommande räntejusteringar. Påverkar riskaptit för tillväxtaktier globalt. Direkt relevant för dina eventuella US-innehav.`, impact:'imp-h', label:'HÖG PÅVERKAN', tags:['Makro','USD','Ränta']},
-      {title:`Tekniksektorn: Stark AI-efterfrågan håller i sig under Q1 2026`, body:`Analytiker på Morgan Stanley rapporterar att AI-investeringarna från hyperscalers fortsätter accelerera. Positivt för bolag exponerade mot datacenter och halvledare.`, impact:'imp-m', label:'MEDEL PÅVERKAN', tags:['AI','Tech','Halvledare']},
-      {title:`Svensk ekonomi: Riksbanken signalerar möjlig räntesänkning i april`, body:`Riksbankens vice riksbankschef antyder att inflationsdatan öppnar för sänkning under våren. Gynnar räntekänsliga bolag på Stockholmsbörsen.`, impact:'imp-l', label:'POSITIV SIGNAL', tags:['Riksbanken','Makro','Sverige']},
-    ];
-    document.getElementById('newsContent').innerHTML = demoNews.map(n=>`
-      <div class="news-item">
-        <div class="ni-top">
-          <div class="ni-title">${n.title}</div>
-          <div class="impact ${n.impact}">${n.label}</div>
-        </div>
-        <div class="ni-body">${n.body}</div>
-        <div class="tags">${n.tags.map(t=>`<span class="tag">${t}</span>`).join('')}
-        ${stocks.slice(0,3).map(s=>`<span class="tag">${s.ticker}</span>`).join('')}</div>
-      </div>
-    `).join('');
-  }, 1800);
+    const now=new Date();
+    document.getElementById('onepagerBadge').textContent=`Genererad ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')} · ${stocks.length} bolag bevakade`;
+    const items=[{title:'Fed-protokoll: splittrad syn på räntebanan påverkar riskaptiten globalt',body:'Federal Reserve-ledamöter är oeniga om takten för kommande sänkningar. Mer restriktiv ton dämpar riskaptit och kan påverka tillväxtaktier negativt.',impact:'h',tags:['Makro','Fed','Ränta']},{title:'Stark efterfrågan på AI-infrastruktur — analytiker höjer estimat',body:'Hyperscalers ökar datacenterinvesteringar. Positivt för bolag exponerade mot AI-värdekedjan och halvledare.',impact:'l',tags:['AI','Tech','Halvledare']},{title:'Riksbanken öppnar för räntesänkning Q2 — gynnar räntekänsliga bolag',body:'Vice riksbankschefen signalerar att inflationsdatan möjliggör en sänkning under våren. Positivt för högt belånade bolag.',impact:'m',tags:['Riksbanken','Sverige']}];
+    document.getElementById('onepagerContent').innerHTML=items.map(n=>`<div class="news-card"><div class="nc-top"><div class="nc-title">${n.title}</div><div class="nc-badge ${n.impact==='h'?'nb-h':n.impact==='m'?'nb-m':'nb-l'}">${n.impact==='h'?'HÖG PÅVERKAN':n.impact==='m'?'MEDEL':'POSITIV SIGNAL'}</div></div><div class="nc-body">${n.body}</div><div class="nc-footer"><div class="nc-tags">${n.tags.map(t=>`<span class="nc-tag">${t}</span>`).join('')}${stocks.slice(0,2).map(s=>`<span class="nc-tag">${s.ticker}</span>`).join('')}</div><span class="nc-meta">${now.toLocaleDateString('sv-SE')}</span></div></div>`).join('');
+  },1600);
 }
-
-// ── RENDER ALL ──
-function renderAll() {
-  renderSidebarStocks();
-  renderDashboard();
+function openModal(){document.getElementById('modalOverlay').classList.add('open');setTimeout(()=>document.getElementById('m-name').focus(),200);}
+function closeModal(){document.getElementById('modalOverlay').classList.remove('open');}
+function addStock(){
+  const name=document.getElementById('m-name').value.trim(),ticker=document.getElementById('m-ticker').value.trim().toUpperCase();
+  if(!name||!ticker){alert('Namn och ticker krävs');return;}
+  const s={id:'s'+Date.now(),name,ticker,exchange:document.getElementById('m-exchange').value,price:document.getElementById('m-price').value.trim(),thesis:'',notes:[],news:[],tags:[],bull:'',bear:'',sources:'',pe:'',div_yield:'',marketcap:'',sector:'',ev_ebitda:'',rev_growth:'',op_margin:'',net_debt:''};
+  stocks.push(s);save();closeModal();
+  ['m-name','m-ticker','m-price'].forEach(id=>document.getElementById(id).value='');
+  renderSidebarStocks();navStock(s.id);
 }
-
-// ── CLOSE MODAL ON OUTSIDE CLICK ──
-document.getElementById('modalOverlay').addEventListener('click', e => {
-  if(e.target === document.getElementById('modalOverlay')) closeModal();
-});
-
-// ── KEYBOARD SHORTCUT: Escape to close modal ──
-document.addEventListener('keydown', e => {
-  if(e.key==='Escape') closeModal();
-});
-
-// ── INIT ──
-document.getElementById('dashDate').innerHTML = new Date().toLocaleDateString('sv-SE',{weekday:'long',year:'numeric',month:'long',day:'numeric'}).toUpperCase();
-buildTicker();
-loadData();
+document.getElementById('modalOverlay').addEventListener('click',e=>{if(e.target===document.getElementById('modalOverlay'))closeModal();});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+function boot(){buildTicker();renderSidebarStocks();renderDash();}
+load();
 </script>
 </body>
 </html>
