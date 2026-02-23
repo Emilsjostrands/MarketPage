@@ -358,6 +358,9 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 .mbtns .btn,.mbtns .bg{flex:1;justify-content:center;}
 
 @keyframes spin{to{transform:rotate(360deg)}}
+.search-result-item{padding:11px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.12s;}
+.search-result-item:last-child{border-bottom:none;}
+.search-result-item:hover{background:var(--blue-pale);}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:0.4}}
 .typing span{display:inline-block;width:5px;height:5px;border-radius:50%;background:var(--muted2);margin:0 2px;animation:pulse 1.2s ease infinite;}
 .typing span:nth-child(2){animation-delay:0.2s;}
@@ -422,14 +425,46 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 
 <!-- MODAL -->
 <div class="moverlay" id="moverlay">
-  <div class="modal">
+  <div class="modal" style="width:480px">
     <div class="modal-title">Lägg till bolag</div>
-    <label>Bolagsnamn *</label><input id="m-name" placeholder="t.ex. Ericsson">
-    <label>Ticker *</label><input id="m-ticker" placeholder="t.ex. ERIC B">
-    <label>Börs</label>
-    <select id="m-exch"><option>Stockholmsbörsen 🇸🇪</option><option>NASDAQ 🇺🇸</option><option>NYSE 🇺🇸</option><option>Annan</option></select>
-    <label>Aktuell kurs</label><input id="m-price" placeholder="t.ex. 80.42">
-    <div class="mbtns"><button class="bg" onclick="closeModal()">Avbryt</button><button class="btn" onclick="addStock()">Lägg till</button></div>
+
+    <!-- STEP 1: SEARCH -->
+    <div id="modal-step1">
+      <label>Sök bolag</label>
+      <div style="position:relative">
+        <input id="m-search" placeholder="Skriv bolagsnamn eller ticker, t.ex. Ericsson..." autocomplete="off"
+          oninput="searchCompany(this.value)"
+          style="width:100%;background:#fff;border:1px solid var(--border2);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'Sora',sans-serif;font-size:13px;outline:none;transition:border-color 0.15s;">
+        <div id="search-spinner" style="display:none;position:absolute;right:12px;top:50%;transform:translateY(-50%);font-size:14px;animation:spin 1s linear infinite;color:var(--muted)">◌</div>
+      </div>
+      <div id="search-results" style="margin-top:8px;max-height:260px;overflow-y:auto;border-radius:8px;border:1px solid var(--border);display:none;background:#fff;box-shadow:0 4px 12px rgba(30,58,95,0.1)"></div>
+      <div id="search-hint" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:8px;text-align:center">
+        Söker via Financial Modeling Prep · Kräver ingen nyckel
+      </div>
+
+      <!-- API KEY SECTION -->
+      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:6px">FMP API-nyckel (valfri — utökar sökresultat)</div>
+        <input id="m-fmp-key" placeholder="Din FMP-nyckel för bättre täckning..." type="password"
+          style="width:100%;background:#fff;border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;outline:none;"
+          oninput="saveFmpKey(this.value)">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:4px">Gratis på financialmodelingprep.com · Bättre täckning för svenska bolag</div>
+      </div>
+    </div>
+
+    <!-- STEP 2: CONFIRM SELECTED COMPANY -->
+    <div id="modal-step2" style="display:none">
+      <div id="selected-company-card" style="background:var(--blue-pale);border:1px solid var(--border2);border-radius:10px;padding:16px;margin-bottom:14px"></div>
+      <label>Aktuell kurs (valfritt)</label>
+      <input id="m-price" placeholder="t.ex. 80.42"
+        style="width:100%;background:#fff;border:1px solid var(--border2);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'Sora',sans-serif;font-size:13px;outline:none;">
+      <button class="bg bsm" onclick="resetModal()" style="margin-top:10px;display:flex;align-items:center;gap:5px">← Sök igen</button>
+    </div>
+
+    <div class="mbtns" style="margin-top:16px">
+      <button class="bg" onclick="closeModal()">Avbryt</button>
+      <button class="btn" id="modal-add-btn" onclick="addStock()" disabled style="opacity:0.4">Välj ett bolag först</button>
+    </div>
   </div>
 </div>
 
@@ -666,13 +701,145 @@ function genOnepager(){
   },1600);
 }
 
-function openModal(){document.getElementById('moverlay').classList.add('open');setTimeout(()=>document.getElementById('m-name').focus(),200);}
+// ══ MODAL & COMPANY SEARCH ══
+let selectedCompany = null;
+let searchTimer = null;
+let fmpKey = '';
+
+async function loadFmpKey(){try{const r=await window.storage.get('pv5-fmpkey');if(r){fmpKey=r.value;const el=document.getElementById('m-fmp-key');if(el)el.value=fmpKey;}}catch(e){}}
+async function saveFmpKey(k){fmpKey=k;try{await window.storage.set('pv5-fmpkey',k);}catch(e){}}
+
+function openModal(){
+  selectedCompany=null;
+  document.getElementById('moverlay').classList.add('open');
+  document.getElementById('modal-step1').style.display='block';
+  document.getElementById('modal-step2').style.display='none';
+  document.getElementById('search-results').style.display='none';
+  document.getElementById('search-results').innerHTML='';
+  const addBtn=document.getElementById('modal-add-btn');
+  addBtn.disabled=true;addBtn.style.opacity='0.4';addBtn.textContent='Välj ett bolag först';
+  const inp=document.getElementById('m-search');if(inp)inp.value='';
+  const price=document.getElementById('m-price');if(price)price.value='';
+  loadFmpKey();
+  setTimeout(()=>document.getElementById('m-search').focus(),200);
+}
 function closeModal(){document.getElementById('moverlay').classList.remove('open');}
+function resetModal(){
+  selectedCompany=null;
+  document.getElementById('modal-step1').style.display='block';
+  document.getElementById('modal-step2').style.display='none';
+  document.getElementById('search-results').style.display='none';
+  const addBtn=document.getElementById('modal-add-btn');
+  addBtn.disabled=true;addBtn.style.opacity='0.4';addBtn.textContent='Välj ett bolag först';
+  setTimeout(()=>document.getElementById('m-search').focus(),100);
+}
+
+function searchCompany(query){
+  clearTimeout(searchTimer);
+  const q=query.trim();
+  const res=document.getElementById('search-results');
+  const hint=document.getElementById('search-hint');
+  if(q.length<2){res.style.display='none';return;}
+  document.getElementById('search-spinner').style.display='block';
+  searchTimer=setTimeout(()=>doSearch(q),400);
+}
+
+async function doSearch(q){
+  const res=document.getElementById('search-results');
+  const spinner=document.getElementById('search-spinner');
+  const key=fmpKey||'demo';
+  try{
+    const url=`https://financialmodelingprep.com/api/v3/search?query=${encodeURIComponent(q)}&limit=10&apikey=${key}`;
+    const resp=await fetch(url);
+    const data=await resp.json();
+    spinner.style.display='none';
+    if(!data||!data.length){
+      res.style.display='block';
+      res.innerHTML=`<div style="padding:16px;text-align:center;font-size:12px;color:var(--muted)">Inga resultat för "${q}"<br><span style="font-size:11px">Prova en annan stavning eller lägg till FMP-nyckel</span></div>`;
+      return;
+    }
+    res.style.display='block';
+    res.innerHTML=data.map(c=>{
+      const flag=getFlag(c.exchangeShortName||c.stockExchange||'');
+      const exch=c.exchangeShortName||c.stockExchange||'';
+      return`<div class="search-result-item" onclick="selectCompany(${JSON.stringify(c).replace(/"/g,'&quot;')})">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <div>
+            <div style="font-weight:500;font-size:13px;color:var(--blue-dark)">${flag} ${c.name||c.companyName}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);margin-top:2px">${c.symbol} · ${exch}</div>
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-align:right;flex-shrink:0">${c.currency||''}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    spinner.style.display='none';
+    res.style.display='block';
+    res.innerHTML=`<div style="padding:16px;text-align:center;font-size:12px;color:var(--red)">Sökningen misslyckades.<br><span style="font-size:11px;color:var(--muted)">Kontrollera nätverksanslutning</span></div>`;
+  }
+}
+
+function getFlag(exchange){
+  const se=['STO','XSTO','NGM','XNGM','SSE'];
+  const us=['NASDAQ','NYSE','AMEX','OTC','XNYS','XNAS','NYSEArca'];
+  const uk=['LSE','XLON'];
+  const de=['XETRA','FRA'];
+  const s=exchange.toUpperCase();
+  if(se.some(x=>s.includes(x)))return'🇸🇪';
+  if(us.some(x=>s.includes(x)))return'🇺🇸';
+  if(uk.some(x=>s.includes(x)))return'🇬🇧';
+  if(de.some(x=>s.includes(x)))return'🇩🇪';
+  return'🌐';
+}
+
+function selectCompany(c){
+  selectedCompany=c;
+  // Hide search, show confirm card
+  document.getElementById('modal-step1').style.display='none';
+  document.getElementById('modal-step2').style.display='block';
+  const flag=getFlag(c.exchangeShortName||c.stockExchange||'');
+  const exch=c.exchangeShortName||c.stockExchange||'';
+  const card=document.getElementById('selected-company-card');
+  card.innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <div style="font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);margin-bottom:4px">VALT BOLAG</div>
+        <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--blue-dark)">${flag} ${c.name||c.companyName}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted2);margin-top:4px;display:flex;gap:12px">
+          <span>${c.symbol}</span>
+          <span>·</span>
+          <span>${exch}</span>
+          ${c.currency?`<span>·</span><span>${c.currency}</span>`:''}
+        </div>
+      </div>
+      <div style="font-size:24px">${flag}</div>
+    </div>`;
+  const addBtn=document.getElementById('modal-add-btn');
+  addBtn.disabled=false;addBtn.style.opacity='1';addBtn.textContent='Lägg till bolag';
+  setTimeout(()=>document.getElementById('m-price').focus(),100);
+}
+
 function addStock(){
-  const name=document.getElementById('m-name').value.trim(),ticker=document.getElementById('m-ticker').value.trim().toUpperCase();
-  if(!name||!ticker){alert('Namn och ticker krävs');return;}
-  const s={id:'s'+Date.now(),name,ticker,exchange:document.getElementById('m-exch').value,price:document.getElementById('m-price').value.trim(),thesis:'',revisions:[],notes:[],news:[],tags:[],checks:{},bull:'',bear:'',sell_thesis:'',sell_time:'',sell_size:'',sources:''};
-  stocks.push(s);save();closeModal();['m-name','m-ticker','m-price'].forEach(id=>document.getElementById(id).value='');renderSidebar();navStock(s.id);
+  if(!selectedCompany)return;
+  const c=selectedCompany;
+  const flag=getFlag(c.exchangeShortName||c.stockExchange||'');
+  const exch=c.exchangeShortName||c.stockExchange||'';
+  const exchLabel=`${exch} ${flag}`;
+  const s={
+    id:'s'+Date.now(),
+    name:c.name||c.companyName,
+    ticker:c.symbol,
+    exchange:exchLabel,
+    currency:c.currency||'',
+    fmpSymbol:c.symbol,
+    sector:'',
+    industry:'',
+    country:flag==='🇸🇪'?'SE':flag==='🇺🇸'?'US':'',
+    price:document.getElementById('m-price').value.trim(),
+    thesis:'',revisions:[],notes:[],news:[],tags:[],checks:{},
+    bull:'',bear:'',sell_thesis:'',sell_time:'',sell_size:'',sources:''
+  };
+  stocks.push(s);save();closeModal();selectedCompany=null;renderSidebar();navStock(s.id);
 }
 document.getElementById('moverlay').addEventListener('click',e=>{if(e.target===document.getElementById('moverlay'))closeModal();});
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
