@@ -70,8 +70,8 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 .sni.active{color:#f5f0e8;background:rgba(74,144,196,0.22);border-left-color:rgba(180,210,245,0.8);}
 .sni-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .sni-price{font-family:'DM Mono',monospace;font-size:10px;color:rgba(180,210,245,0.85);flex-shrink:0;}
-.addbtn{display:flex;align-items:center;gap:8px;padding:9px 18px 9px 26px;cursor:pointer;color:rgba(30,58,95,0.55);font-size:12px;transition:color 0.15s;}
-.addbtn:hover{color:var(--blue-dark);}
+.addbtn{display:flex;align-items:center;gap:8px;padding:9px 18px 9px 26px;cursor:pointer;color:rgba(245,240,232,0.55);font-size:12px;transition:color 0.15s;}
+.addbtn:hover{color:#f5f0e8;}
 
 /* MAIN */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
@@ -128,13 +128,26 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 .gap8{display:flex;gap:8px;align-items:center;}
 
 /* ══ STOCK HERO ══ */
-.hero{background:var(--blue-dark);border-radius:12px;padding:24px 28px;margin-bottom:8px;display:flex;justify-content:space-between;align-items:flex-start;position:relative;overflow:hidden;box-shadow:0 4px 16px rgba(30,58,95,0.2);}
+.hero{background:var(--blue-dark);border-radius:12px;padding:22px 26px;margin-bottom:8px;position:relative;overflow:hidden;box-shadow:0 4px 16px rgba(30,58,95,0.2);}
 .hero::before{content:'';position:absolute;top:-60px;right:-60px;width:220px;height:220px;background:radial-gradient(circle,rgba(74,144,196,0.2) 0%,transparent 70%);pointer-events:none;}
-.hflag{font-size:24px;margin-bottom:5px;display:block;}
-.hname{font-family:'Playfair Display',serif;font-size:26px;font-weight:400;line-height:1.1;color:#f5f0e8;}
-.hmeta{display:flex;gap:14px;margin-top:5px;flex-wrap:wrap;}
+.hero-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:16px;}
+.hero-bottom{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;border-top:1px solid rgba(255,255,255,0.1);padding-top:14px;}
+.hflag{font-size:22px;margin-bottom:4px;display:block;}
+.hname{font-family:'Playfair Display',serif;font-size:24px;font-weight:400;line-height:1.1;color:#f5f0e8;}
+.hmeta{display:flex;gap:12px;margin-top:5px;flex-wrap:wrap;align-items:center;}
 .hmi{font-family:'DM Mono',monospace;font-size:10px;color:rgba(245,240,232,0.55);}
-.hprice{font-family:'DM Mono',monospace;font-size:28px;font-weight:500;letter-spacing:-0.03em;text-align:right;color:#f5f0e8;}
+.hbd-badge{font-family:'DM Mono',monospace;font-size:9px;padding:2px 7px;border-radius:10px;background:rgba(42,122,75,0.3);border:1px solid rgba(42,122,75,0.5);color:rgba(180,240,200,0.9);}
+.hprice{font-family:'DM Mono',monospace;font-size:26px;font-weight:500;letter-spacing:-0.03em;color:#f5f0e8;text-align:right;}
+.hprice-label{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.4);text-align:right;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.1em;}
+.hstat{background:rgba(255,255,255,0.06);border-radius:8px;padding:10px 12px;border:1px solid rgba(255,255,255,0.08);}
+.hstat-label{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:5px;}
+.hstat-val{font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:#f5f0e8;letter-spacing:-0.01em;}
+.hstat-val.pos{color:#7dd4a0;}
+.hstat-val.neg{color:#f08080;}
+.hstat-sub{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.35);margin-top:3px;}
+.hdesc{font-size:11px;color:rgba(245,240,232,0.6);line-height:1.65;max-width:560px;}
+.hceo{font-family:'DM Mono',monospace;font-size:10px;color:rgba(245,240,232,0.5);margin-top:5px;display:flex;align-items:center;gap:5px;}
+.hceo-name{color:rgba(245,240,232,0.75);}
 
 /* TAGS */
 .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;margin-top:10px;align-items:center;}
@@ -547,10 +560,68 @@ function renderStock(){
   const s=stocks.find(x=>x.id===activeId);if(!s)return;
   const flag=s.exchange.includes('🇸🇪')?'🇸🇪':'🇺🇸';
   document.getElementById('stockDetail').innerHTML=`
-<div class="hero">
-  <div><span class="hflag">${flag}</span><div class="hname">${s.name}</div>
-  <div class="hmeta"><span class="hmi">${s.ticker}</span><span class="hmi">·</span><span class="hmi">${s.exchange}</span></div></div>
-  <div><div class="hprice">${s.price||'—'}</div><div style="margin-top:8px;text-align:right"><button class="bg bsm" style="color:rgba(245,240,232,0.7);border-color:rgba(245,240,232,0.2)" onclick="editPrice()">Uppdatera kurs</button></div></div>
+<div class="hero" id="stockHero">
+  <div class="hero-top">
+    <div style="flex:1">
+      <span class="hflag">${flag}</span>
+      <div class="hname">${s.name}</div>
+      <div class="hmeta">
+        <span class="hmi">${s.ticker}</span>
+        <span class="hmi">·</span>
+        <span class="hmi">${s.exchange}</span>
+        ${s.sector?`<span class="hmi">·</span><span class="hmi">${s.sector}</span>`:''}
+        ${s.bdConnected?`<span class="hbd-badge">✓ Börsdata</span>`:''}
+      </div>
+      <div id="hero-desc">
+        ${s.description
+          ? `<div class="hdesc" style="margin-top:10px">${s.description}</div>`
+          : s.bdConnected
+            ? `<div class="hdesc" style="margin-top:10px;color:rgba(245,240,232,0.3);font-style:italic">Laddar bolagsbeskrivning...</div>`
+            : `<div class="hdesc" style="margin-top:10px;color:rgba(245,240,232,0.3);font-style:italic">Ingen beskrivning — koppla Börsdata för automatisk info</div>`
+        }
+        ${s.ceo ? `<div class="hceo">VD: <span class="hceo-name">${s.ceo}</span></div>` : ''}
+      </div>
+    </div>
+    <div style="text-align:right;flex-shrink:0">
+      <div class="hprice-label">Stängningskurs</div>
+      <div class="hprice" id="hero-close-price">${s.closePrice||s.price||'—'}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.3);margin-top:3px" id="hero-price-date">${s.closePriceDate?'Stängde '+s.closePriceDate:s.closePrice?'':'Uppdateras via Börsdata'}</div>
+      <div style="margin-top:10px;display:flex;gap:6px;justify-content:flex-end">
+        <button class="bg bsm" style="color:rgba(245,240,232,0.6);border-color:rgba(245,240,232,0.15);font-size:10px" onclick="fetchClosePrice()">⟳ Hämta kurs</button>
+        <button class="bg bsm" style="color:rgba(245,240,232,0.6);border-color:rgba(245,240,232,0.15);font-size:10px" onclick="editGav()">GAV ✎</button>
+      </div>
+    </div>
+  </div>
+  <div class="hero-bottom">
+    <div class="hstat">
+      <div class="hstat-label">GAV</div>
+      <div class="hstat-val" id="hero-gav">${s.gav||'—'}</div>
+      <div class="hstat-sub">${s.gav?s.currency||'':'Ange anskaffningskurs'}</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-label">Utveckling</div>
+      ${(()=>{
+        const cp=parseFloat(s.closePrice||s.price);
+        const gav=parseFloat(s.gav);
+        if(cp&&gav){
+          const pct=((cp-gav)/gav*100);
+          const sign=pct>=0?'+':'';
+          return `<div class="hstat-val ${pct>=0?'pos':'neg'}" id="hero-dev">${sign}${pct.toFixed(1)}%</div><div class="hstat-sub">${pct>=0?'Vinst':'Förlust'} sedan köp</div>`;
+        }
+        return `<div class="hstat-val" id="hero-dev" style="color:rgba(245,240,232,0.25)">—</div><div class="hstat-sub">Ange GAV och kurs</div>`;
+      })()}
+    </div>
+    <div class="hstat">
+      <div class="hstat-label">Senaste stängning</div>
+      <div class="hstat-val" id="hero-close2">${s.closePrice||'—'}</div>
+      <div class="hstat-sub">${s.closePriceDate||'Gårdagens kurs'}</div>
+    </div>
+    <div class="hstat">
+      <div class="hstat-label">Valuta</div>
+      <div class="hstat-val">${s.currency||'—'}</div>
+      <div class="hstat-sub">${s.country==='SE'?'Svensk aktie':'Utländsk aktie'}</div>
+    </div>
+  </div>
 </div>
 <div class="tags" id="stockTags">${renderTags(s)}</div>
 <div class="stabs">
@@ -653,6 +724,35 @@ function renderStock(){
   <div style="margin-top:10px"><button class="btn bsm" onclick="saveSources()">Spara</button></div>
 </div>`;
   updateCheckScore();
+  // Auto-fetch description/CEO from Börsdata if connected and not yet loaded
+  if(s.bdConnected&&s.bdInsId&&borsdataKey&&(!s.description||!s.ceo)){
+    fetchBdDetails(s.id);
+  }
+}
+
+async function fetchBdDetails(stockId){
+  const s=stocks.find(x=>x.id===stockId);
+  if(!s||!borsdataKey||!s.bdInsId)return;
+  try{
+    const r=await fetch(`${BORSDATA_BASE}/instruments/${s.bdInsId}/description?authKey=${borsdataKey}`);
+    const d=await r.json();
+    let updated=false;
+    // Description
+    const desc=d.description||d.Description||d.text||d.Text||'';
+    if(desc&&!s.description){s.description=desc;updated=true;}
+    // CEO — Börsdata returns management info in company details
+    const ceo=d.ceo||d.Ceo||d.CEO||d.director||d.Director||'';
+    if(ceo&&!s.ceo){s.ceo=ceo;updated=true;}
+    if(updated){
+      save();
+      // Update just the hero desc without full re-render
+      const descEl=document.getElementById('hero-desc');
+      if(descEl&&s.description){
+        descEl.innerHTML=`<div class="hdesc" style="margin-top:10px">${s.description}</div>`
+          +(s.ceo?`<div class="hceo">VD: <span class="hceo-name">${s.ceo}</span></div>`:'');
+      }
+    }
+  }catch(e){}
 }
 
 function renderTags(s){return(s.tags||[]).map(t=>`<div class="tag">${t}<span class="tagx" onclick="removeTag('${t}')">×</span></div>`).join('')+`<div class="tag tagadd" onclick="startTagInput()">+ Tagg</div>`;}
@@ -685,7 +785,51 @@ function resetChecklist(){const s=stocks.find(x=>x.id===activeId);if(!s)return;s
 function saveSell(key){const s=stocks.find(x=>x.id===activeId);if(!s)return;s['sell_'+key]=document.getElementById('sell-'+key).value;save();const h=document.getElementById('sell-'+key+'-hint');if(h){h.textContent='Sparad ✓';h.classList.add('ok');setTimeout(()=>{h.textContent='Osparad';h.classList.remove('ok');},2000);}}
 function saveBB(k){const s=stocks.find(x=>x.id===activeId);if(!s)return;s[k]=document.getElementById(k+'-ta').value;save();const btn=event.target;btn.textContent='Sparad ✓';setTimeout(()=>{btn.textContent='Spara';},1500);}
 function saveSources(){const s=stocks.find(x=>x.id===activeId);if(!s)return;s.sources=document.getElementById('sources-ta').value;save();const btn=event.target;btn.textContent='Sparad ✓';setTimeout(()=>{btn.textContent='Spara';},1500);}
-function editPrice(){const s=stocks.find(x=>x.id===activeId);if(!s)return;const p=prompt(`Ny kurs för ${s.name}:`,s.price||'');if(p!==null){s.price=p.trim();save();renderSidebar();renderStock();}}
+function editGav(){
+  const s=stocks.find(x=>x.id===activeId);if(!s)return;
+  const v=prompt(`GAV (anskaffningsvärde) för ${s.name}:\nAnge din genomsnittliga anskaffningskurs:`,s.gav||'');
+  if(v===null)return;
+  s.gav=v.trim();
+  save();
+  renderStock();
+}
+
+async function fetchClosePrice(){
+  const s=stocks.find(x=>x.id===activeId);if(!s)return;
+  const btn=event.target;
+  btn.textContent='Hämtar...';btn.disabled=true;
+
+  // Try Börsdata if connected
+  if(borsdataKey&&s.bdInsId){
+    try{
+      const r=await fetch(`${BORSDATA_BASE}/instruments/${s.bdInsId}/stockprices/last?authKey=${borsdataKey}`);
+      const d=await r.json();
+      const p=d.stockPricesList?.[0];
+      if(p){
+        s.closePrice=p.c?.toFixed(2)||p.o?.toFixed(2)||'';
+        s.closePriceDate=p.d||'';
+        save();renderStock();return;
+      }
+    }catch(e){}
+  }
+
+  // Manual fallback
+  btn.textContent='⟳ Hämta kurs';btn.disabled=false;
+  const v=prompt(`Ange gårdagens stängningskurs för ${s.name}:`,s.closePrice||s.price||'');
+  if(v===null)return;
+  s.closePrice=v.trim();
+  s.closePriceDate=(() => {
+    const d=new Date();d.setDate(d.getDate()-1);
+    // Skip to friday if weekend
+    if(d.getDay()===0)d.setDate(d.getDate()-2);
+    if(d.getDay()===6)d.setDate(d.getDate()-1);
+    return d.toLocaleDateString('sv-SE');
+  })();
+  save();renderSidebar();renderStock();
+}
+
+// Legacy compat
+function editPrice(){fetchClosePrice();}
 
 function connectApi(){const k=document.getElementById('apiKeyInput')?.value?.trim();if(!k)return;saveApiKey(k);renderStock();}
 function handleChatKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendChat();}}
