@@ -54,7 +54,7 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 .layout{display:flex;flex:1;overflow:hidden;}
 
 /* SIDEBAR */
-.sidebar{width:var(--sw);background:linear-gradient(180deg,#1e3a5f 0%,#243f66 40%,#2a4a78 75%,#2e5286 100%);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;box-shadow:2px 0 16px rgba(30,58,95,0.2);}
+.sidebar{width:var(--sw);background:linear-gradient(180deg,#1e3a5f 0%,#243f66 35%,#2a4a78 65%,#4a6e96 78%,#8aabcc 88%,#c8d8e8 94%,#e8ded0 100%);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;box-shadow:2px 0 16px rgba(30,58,95,0.2);}
 .slogo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.08);}
 .slogo-t{font-family:'Playfair Display',serif;font-size:18px;color:#f5f0e8;letter-spacing:0.01em;}
 .slogo-s{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.45);letter-spacing:0.15em;margin-top:3px;}
@@ -70,8 +70,8 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 .sni.active{color:#f5f0e8;background:rgba(74,144,196,0.22);border-left-color:rgba(180,210,245,0.8);}
 .sni-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .sni-price{font-family:'DM Mono',monospace;font-size:10px;color:rgba(180,210,245,0.85);flex-shrink:0;}
-.addbtn{display:flex;align-items:center;gap:8px;padding:9px 18px 9px 26px;cursor:pointer;color:rgba(245,240,232,0.35);font-size:12px;transition:color 0.15s;}
-.addbtn:hover{color:rgba(180,210,245,0.9);}
+.addbtn{display:flex;align-items:center;gap:8px;padding:9px 18px 9px 26px;cursor:pointer;color:rgba(30,58,95,0.55);font-size:12px;transition:color 0.15s;}
+.addbtn:hover{color:var(--blue-dark);}
 
 /* MAIN */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
@@ -439,7 +439,7 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
       </div>
       <div id="search-results" style="margin-top:8px;max-height:260px;overflow-y:auto;border-radius:8px;border:1px solid var(--border);display:none;background:#fff;box-shadow:0 4px 12px rgba(30,58,95,0.1)"></div>
       <div id="search-hint" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:8px;text-align:center">
-        Söker via Financial Modeling Prep · Kräver ingen nyckel
+        Söker i inbyggd lista · Lägg till Börsdata-nyckel för full täckning
       </div>
 
         <!-- BÖRSDATA KEY -->
