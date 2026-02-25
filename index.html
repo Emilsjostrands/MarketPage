@@ -54,8 +54,8 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 .layout{display:flex;flex:1;overflow:hidden;}
 
 /* SIDEBAR */
-.sidebar{width:var(--sw);background:var(--blue-dark);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;box-shadow:2px 0 12px rgba(30,58,95,0.15);}
-.slogo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,0.1);}
+.sidebar{width:var(--sw);background:linear-gradient(180deg,#1e3a5f 0%,#243f66 40%,#2a4a78 75%,#2e5286 100%);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;box-shadow:2px 0 16px rgba(30,58,95,0.2);}
+.slogo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.08);}
 .slogo-t{font-family:'Playfair Display',serif;font-size:18px;color:#f5f0e8;letter-spacing:0.01em;}
 .slogo-s{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.45);letter-spacing:0.15em;margin-top:3px;}
 .sbody{flex:1;overflow-y:auto;padding-bottom:20px;}
@@ -64,14 +64,14 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 .nsec{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.35);letter-spacing:0.18em;text-transform:uppercase;padding:16px 20px 5px;}
 .ni{display:flex;align-items:center;gap:9px;padding:9px 20px;cursor:pointer;color:rgba(245,240,232,0.6);font-size:13px;transition:all 0.15s;border-left:2px solid transparent;}
 .ni:hover{color:#f5f0e8;background:rgba(255,255,255,0.07);}
-.ni.active{color:#f5f0e8;background:rgba(74,144,196,0.25);border-left-color:var(--blue-light);}
+.ni.active{color:#f5f0e8;background:rgba(74,144,196,0.22);border-left-color:rgba(180,210,245,0.8);}
 .sni{display:flex;align-items:center;gap:8px;padding:7px 18px 7px 26px;cursor:pointer;color:rgba(245,240,232,0.55);font-size:12px;transition:all 0.15s;border-left:2px solid transparent;}
 .sni:hover{color:#f5f0e8;background:rgba(255,255,255,0.07);}
-.sni.active{color:#f5f0e8;background:rgba(74,144,196,0.25);border-left-color:var(--blue-light);}
+.sni.active{color:#f5f0e8;background:rgba(74,144,196,0.22);border-left-color:rgba(180,210,245,0.8);}
 .sni-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
-.sni-price{font-family:'DM Mono',monospace;font-size:10px;color:rgba(74,144,196,0.9);flex-shrink:0;}
-.addbtn{display:flex;align-items:center;gap:8px;padding:9px 18px 9px 26px;cursor:pointer;color:rgba(245,240,232,0.4);font-size:12px;transition:color 0.15s;}
-.addbtn:hover{color:rgba(74,144,196,0.9);}
+.sni-price{font-family:'DM Mono',monospace;font-size:10px;color:rgba(180,210,245,0.85);flex-shrink:0;}
+.addbtn{display:flex;align-items:center;gap:8px;padding:9px 18px 9px 26px;cursor:pointer;color:rgba(245,240,232,0.35);font-size:12px;transition:color 0.15s;}
+.addbtn:hover{color:rgba(180,210,245,0.9);}
 
 /* MAIN */
 .main{flex:1;display:flex;flex-direction:column;overflow:hidden;}
@@ -442,13 +442,36 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
         Söker via Financial Modeling Prep · Kräver ingen nyckel
       </div>
 
-      <!-- API KEY SECTION -->
+        <!-- BÖRSDATA KEY -->
       <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:6px">FMP API-nyckel (valfri — utökar sökresultat)</div>
-        <input id="m-fmp-key" placeholder="Din FMP-nyckel för bättre täckning..." type="password"
-          style="width:100%;background:#fff;border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;outline:none;"
-          oninput="saveFmpKey(this.value)">
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:4px">Gratis på financialmodelingprep.com · Bättre täckning för svenska bolag</div>
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em">Börsdata API-nyckel</div>
+          <div id="modal-key-status" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">Ingen nyckel — söker med fallback</div>
+        </div>
+        <input id="m-bd-key" placeholder="Din Börsdata Pro API-nyckel..." type="password"
+          style="width:100%;background:#fff;border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;outline:none;transition:border-color 0.15s;"
+          oninput="saveBorsdataKey(this.value)">
+        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:4px">borsdata.se · Pro-version · Utökar sökning med hela Börsdata-databasen</div>
+      </div>
+
+      <!-- MANUAL FALLBACK -->
+      <div style="margin-top:10px">
+        <button class="bg bsm" onclick="toggleManualAdd()" style="width:100%;justify-content:center;font-size:11px">
+          Hittar du inte bolaget? Lägg till manuellt →
+        </button>
+        <div id="manual-add-form" style="display:none;margin-top:10px;padding:12px;background:var(--s2);border-radius:8px;border:1px dashed var(--border2)">
+          <div class="frow" style="margin-bottom:8px">
+            <input class="fi" id="man-name" placeholder="Bolagsnamn *">
+            <input class="fi" id="man-ticker" placeholder="Ticker * (t.ex. AAPL)">
+          </div>
+          <select class="fsel" style="width:100%;margin-bottom:8px" id="man-exch">
+            <option>Stockholmsbörsen STO</option>
+            <option>NASDAQ</option>
+            <option>NYSE</option>
+            <option>Annan</option>
+          </select>
+          <button class="btn bsm" onclick="addManually()">Lägg till manuellt</button>
+        </div>
       </div>
     </div>
 
@@ -701,14 +724,253 @@ function genOnepager(){
   },1600);
 }
 
-// ══ MODAL & COMPANY SEARCH ══
+// ══ BÖRSDATA API LAYER ══
+// Alla API-anrop går igenom dessa funktioner.
+// När du har din Börsdata API-nyckel, klistra in den i inställningarna.
+// Appen väljer automatiskt rätt endpoint baserat på om nyckeln finns.
+
+const BORSDATA_BASE = 'https://apiservice.borsdata.se/v1';
+let borsdataKey = '';
 let selectedCompany = null;
 let searchTimer = null;
-let fmpKey = '';
 
-async function loadFmpKey(){try{const r=await window.storage.get('pv5-fmpkey');if(r){fmpKey=r.value;const el=document.getElementById('m-fmp-key');if(el)el.value=fmpKey;}}catch(e){}}
-async function saveFmpKey(k){fmpKey=k;try{await window.storage.set('pv5-fmpkey',k);}catch(e){}}
+// Börsdata instrument cache (laddas en gång)
+let bdInstruments = null;
 
+async function loadKeys(){
+  try{const r=await window.storage.get('pv5-bdkey');if(r&&r.value){borsdataKey=r.value;const el=document.getElementById('m-bd-key');if(el)el.value=borsdataKey;}}catch(e){}
+}
+async function saveBorsdataKey(k){
+  borsdataKey=k.trim();
+  try{await window.storage.set('pv5-bdkey',borsdataKey);}catch(e){}
+  // Reload instruments cache when key changes
+  bdInstruments=null;
+  updateModalKeyStatus();
+}
+
+function updateModalKeyStatus(){
+  const el=document.getElementById('modal-key-status');
+  if(!el)return;
+  if(borsdataKey){
+    el.textContent='✓ Börsdata-nyckel aktiv';
+    el.style.color='var(--green)';
+  } else {
+    el.textContent='Ingen nyckel — söker med fallback';
+    el.style.color='var(--muted)';
+  }
+}
+
+// ── Börsdata: hämta alla instrument (cachat) ──
+async function bdGetInstruments(){
+  if(bdInstruments) return bdInstruments;
+  if(!borsdataKey) return null;
+  try{
+    const r=await fetch(`${BORSDATA_BASE}/instruments?authKey=${borsdataKey}`);
+    const d=await r.json();
+    bdInstruments=d.instruments||[];
+    return bdInstruments;
+  }catch(e){return null;}
+}
+
+// ── Börsdata: hämta detaljer för ett instrument ──
+async function bdGetDetails(insId){
+  if(!borsdataKey||!insId) return null;
+  try{
+    const r=await fetch(`${BORSDATA_BASE}/instruments/${insId}/description?authKey=${borsdataKey}`);
+    return await r.json();
+  }catch(e){return null;}
+}
+
+// ── Börsdata: hämta senaste kurs ──
+async function bdGetLastPrice(insId){
+  if(!borsdataKey||!insId) return null;
+  try{
+    const r=await fetch(`${BORSDATA_BASE}/instruments/${insId}/stockprices/last?authKey=${borsdataKey}`);
+    const d=await r.json();
+    return d.stockPricesList?.[0]||null;
+  }catch(e){return null;}
+}
+
+// ── Börsdata: sök bland instrument ──
+async function bdSearch(query){
+  const instruments=await bdGetInstruments();
+  if(!instruments) return null;
+  const q=query.toLowerCase();
+  return instruments
+    .filter(i=>(i.name||'').toLowerCase().includes(q)||(i.ticker||'').toLowerCase().includes(q))
+    .slice(0,12)
+    .map(i=>({
+      insId:i.insId,
+      name:i.name,
+      ticker:i.ticker,
+      exchange:i.exchange||i.market||'',
+      country:i.country||'',
+      currency:i.currency||'SEK',
+      sector:i.sector||'',
+      branch:i.branch||i.industry||'',
+      source:'borsdata'
+    }));
+}
+
+// ── Fallback: öppen sökning utan nyckel ──
+// Statisk lista med de mest sökta bolagen som fallback
+const FALLBACK_STOCKS = [
+  {name:'Apple Inc',ticker:'AAPL',exchange:'NASDAQ',country:'US',currency:'USD',sector:'Technology',branch:'Consumer Electronics',source:'fallback'},
+  {name:'Microsoft Corporation',ticker:'MSFT',exchange:'NASDAQ',country:'US',currency:'USD',sector:'Technology',branch:'Software',source:'fallback'},
+  {name:'Amazon.com Inc',ticker:'AMZN',exchange:'NASDAQ',country:'US',currency:'USD',sector:'Consumer Cyclical',branch:'Internet Retail',source:'fallback'},
+  {name:'NVIDIA Corporation',ticker:'NVDA',exchange:'NASDAQ',country:'US',currency:'USD',sector:'Technology',branch:'Semiconductors',source:'fallback'},
+  {name:'Alphabet Inc (Google)',ticker:'GOOGL',exchange:'NASDAQ',country:'US',currency:'USD',sector:'Technology',branch:'Internet',source:'fallback'},
+  {name:'Meta Platforms Inc',ticker:'META',exchange:'NASDAQ',country:'US',currency:'USD',sector:'Technology',branch:'Social Media',source:'fallback'},
+  {name:'Tesla Inc',ticker:'TSLA',exchange:'NASDAQ',country:'US',currency:'USD',sector:'Consumer Cyclical',branch:'Electric Vehicles',source:'fallback'},
+  {name:'Berkshire Hathaway',ticker:'BRK.B',exchange:'NYSE',country:'US',currency:'USD',sector:'Financial',branch:'Insurance',source:'fallback'},
+  {name:'JPMorgan Chase',ticker:'JPM',exchange:'NYSE',country:'US',currency:'USD',sector:'Financial',branch:'Banking',source:'fallback'},
+  {name:'Visa Inc',ticker:'V',exchange:'NYSE',country:'US',currency:'USD',sector:'Financial',branch:'Payments',source:'fallback'},
+  {name:'Investor AB',ticker:'INVE B',exchange:'STO',country:'SE',currency:'SEK',sector:'Financial',branch:'Investment Company',source:'fallback'},
+  {name:'Ericsson',ticker:'ERIC B',exchange:'STO',country:'SE',currency:'SEK',sector:'Technology',branch:'Telecom Equipment',source:'fallback'},
+  {name:'Volvo AB',ticker:'VOLV B',exchange:'STO',country:'SE',currency:'SEK',sector:'Industrials',branch:'Trucks',source:'fallback'},
+  {name:'Atlas Copco',ticker:'ATCO A',exchange:'STO',country:'SE',currency:'SEK',sector:'Industrials',branch:'Industrial Machinery',source:'fallback'},
+  {name:'Hexagon AB',ticker:'HEXA B',exchange:'STO',country:'SE',currency:'SEK',sector:'Technology',branch:'Measurement Tech',source:'fallback'},
+  {name:'Handelsbanken',ticker:'SHB A',exchange:'STO',country:'SE',currency:'SEK',sector:'Financial',branch:'Banking',source:'fallback'},
+  {name:'SEB AB',ticker:'SEB A',exchange:'STO',country:'SE',currency:'SEK',sector:'Financial',branch:'Banking',source:'fallback'},
+  {name:'Swedbank',ticker:'SWED A',exchange:'STO',country:'SE',currency:'SEK',sector:'Financial',branch:'Banking',source:'fallback'},
+  {name:'Nordea Bank',ticker:'NDA SE',exchange:'STO',country:'SE',currency:'SEK',sector:'Financial',branch:'Banking',source:'fallback'},
+  {name:'H&M',ticker:'HM B',exchange:'STO',country:'SE',currency:'SEK',sector:'Consumer',branch:'Retail',source:'fallback'},
+  {name:'Essity AB',ticker:'ESSITY B',exchange:'STO',country:'SE',currency:'SEK',sector:'Consumer',branch:'Hygiene',source:'fallback'},
+  {name:'Sandvik AB',ticker:'SAND',exchange:'STO',country:'SE',currency:'SEK',sector:'Industrials',branch:'Mining Equipment',source:'fallback'},
+  {name:'SKF AB',ticker:'SKF B',exchange:'STO',country:'SE',currency:'SEK',sector:'Industrials',branch:'Bearings',source:'fallback'},
+  {name:'AstraZeneca',ticker:'AZN',exchange:'LSE',country:'GB',currency:'GBP',sector:'Healthcare',branch:'Pharmaceuticals',source:'fallback'},
+  {name:'LVMH',ticker:'MC',exchange:'EPA',country:'FR',currency:'EUR',sector:'Consumer',branch:'Luxury Goods',source:'fallback'},
+  {name:'ASML Holding',ticker:'ASML',exchange:'NASDAQ',country:'NL',currency:'EUR',sector:'Technology',branch:'Semiconductor Equipment',source:'fallback'},
+];
+
+function fallbackSearch(query){
+  const q=query.toLowerCase();
+  return FALLBACK_STOCKS.filter(s=>
+    s.name.toLowerCase().includes(q)||
+    s.ticker.toLowerCase().includes(q)||
+    s.sector.toLowerCase().includes(q)
+  ).slice(0,8);
+}
+
+// ── SEARCH ORCHESTRATOR ──
+function searchCompany(query){
+  clearTimeout(searchTimer);
+  const q=query.trim();
+  const res=document.getElementById('search-results');
+  if(q.length<2){res.style.display='none';return;}
+  document.getElementById('search-spinner').style.display='block';
+  searchTimer=setTimeout(()=>doSearch(q),350);
+}
+
+async function doSearch(q){
+  const res=document.getElementById('search-results');
+  const spinner=document.getElementById('search-spinner');
+  try{
+    let results=[];
+    let sourceLabel='';
+    if(borsdataKey){
+      // Try Börsdata first
+      const bdResults=await bdSearch(q);
+      if(bdResults&&bdResults.length){
+        results=bdResults;
+        sourceLabel='Börsdata';
+      }
+    }
+    if(!results.length){
+      // Fallback to built-in list
+      results=fallbackSearch(q);
+      sourceLabel='Inbyggd lista';
+    }
+    spinner.style.display='none';
+    if(!results.length){
+      res.style.display='block';
+      res.innerHTML=`<div style="padding:16px;text-align:center;font-size:12px;color:var(--muted)">
+        Inga träffar för "<strong>${q}</strong>"<br>
+        <span style="font-size:11px">Prova en annan stavning, eller lägg till manuellt nedan</span>
+      </div>`;
+      return;
+    }
+    res.style.display='block';
+    res.innerHTML=`<div style="padding:7px 14px;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);background:var(--s2);border-bottom:1px solid var(--border)">KÄLLA: ${sourceLabel} · ${results.length} träffar</div>`+
+    results.map(c=>{
+      const flag=getFlag(c.exchange,c.country);
+      const safeC=encodeURIComponent(JSON.stringify(c));
+      return`<div class="search-result-item" onclick="selectCompany(decodeURIComponent('${safeC}'),true)">
+        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <div>
+            <div style="font-weight:500;font-size:13px;color:var(--blue-dark)">${flag} ${c.name}</div>
+            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);margin-top:2px;display:flex;gap:8px">
+              <span>${c.ticker}</span><span>·</span><span>${c.exchange}</span>${c.sector?`<span>·</span><span>${c.sector}</span>`:''}
+            </div>
+          </div>
+          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-align:right;flex-shrink:0">${c.currency||''}</div>
+        </div>
+      </div>`;
+    }).join('');
+  }catch(e){
+    spinner.style.display='none';
+    res.style.display='block';
+    res.innerHTML=`<div style="padding:16px;text-align:center;font-size:12px;color:var(--red)">Sökningen misslyckades</div>`;
+  }
+}
+
+function getFlag(exchange,country){
+  if(country==='SE'||['STO','XSTO','NGM'].some(x=>(exchange||'').toUpperCase().includes(x)))return'🇸🇪';
+  if(country==='US'||['NASDAQ','NYSE','AMEX'].some(x=>(exchange||'').toUpperCase().includes(x)))return'🇺🇸';
+  if(country==='GB'||['LSE','XLON'].some(x=>(exchange||'').toUpperCase().includes(x)))return'🇬🇧';
+  if(country==='DE'||['XETRA','FRA'].some(x=>(exchange||'').toUpperCase().includes(x)))return'🇩🇪';
+  if(country==='FR'||['EPA'].some(x=>(exchange||'').toUpperCase().includes(x)))return'🇫🇷';
+  if(country==='NL'||['AEX'].some(x=>(exchange||'').toUpperCase().includes(x)))return'🇳🇱';
+  return'🌐';
+}
+
+function selectCompany(raw, encoded){
+  const c = encoded ? JSON.parse(raw) : raw;
+  selectedCompany=c;
+  document.getElementById('modal-step1').style.display='none';
+  document.getElementById('modal-step2').style.display='block';
+  const flag=getFlag(c.exchange,c.country);
+  document.getElementById('selected-company-card').innerHTML=`
+    <div style="display:flex;justify-content:space-between;align-items:flex-start">
+      <div>
+        <div style="font-size:10px;font-family:'DM Mono',monospace;color:var(--muted);margin-bottom:4px;text-transform:uppercase;letter-spacing:0.1em">Valt bolag</div>
+        <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--blue-dark)">${flag} ${c.name}</div>
+        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted2);margin-top:5px;display:flex;gap:10px;flex-wrap:wrap">
+          <span>${c.ticker}</span><span>·</span><span>${c.exchange}</span>
+          ${c.currency?`<span>·</span><span>${c.currency}</span>`:''}
+          ${c.sector?`<span>·</span><span style="color:var(--blue-mid)">${c.sector}</span>`:''}
+        </div>
+        ${c.source==='borsdata'?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--green);margin-top:6px">✓ Kopplad till Börsdata (ID: ${c.insId})</div>`:
+          c.source==='fallback'?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:6px">Grunddata · Lägg till Börsdata-nyckel för fullständig koppling</div>`:''}
+      </div>
+      <div style="font-size:26px">${flag}</div>
+    </div>`;
+  const addBtn=document.getElementById('modal-add-btn');
+  addBtn.disabled=false;addBtn.style.opacity='1';addBtn.textContent='Lägg till bolag';
+  setTimeout(()=>document.getElementById('m-price')?.focus(),100);
+}
+
+// ── MANUAL ADD ──
+function toggleManualAdd(){
+  const f=document.getElementById('manual-add-form');
+  f.style.display=f.style.display==='none'?'block':'none';
+}
+function addManually(){
+  const name=document.getElementById('man-name').value.trim();
+  const ticker=document.getElementById('man-ticker').value.trim().toUpperCase();
+  if(!name||!ticker){alert('Namn och ticker krävs');return;}
+  const exch=document.getElementById('man-exch').value;
+  const country=exch.includes('STO')||exch.includes('Sverige')?'SE':'US';
+  selectCompany({
+    name,ticker,
+    exchange:exch,
+    country,
+    currency:country==='SE'?'SEK':'USD',
+    sector:'',branch:'',source:'manual'
+  }, false);
+}
+
+// ══ MODAL OPEN/CLOSE ══
 function openModal(){
   selectedCompany=null;
   document.getElementById('moverlay').classList.add('open');
@@ -720,8 +982,9 @@ function openModal(){
   addBtn.disabled=true;addBtn.style.opacity='0.4';addBtn.textContent='Välj ett bolag först';
   const inp=document.getElementById('m-search');if(inp)inp.value='';
   const price=document.getElementById('m-price');if(price)price.value='';
-  loadFmpKey();
-  setTimeout(()=>document.getElementById('m-search').focus(),200);
+  const mf=document.getElementById('manual-add-form');if(mf)mf.style.display='none';
+  loadKeys();
+  setTimeout(()=>document.getElementById('m-search')?.focus(),200);
 }
 function closeModal(){document.getElementById('moverlay').classList.remove('open');}
 function resetModal(){
@@ -731,117 +994,32 @@ function resetModal(){
   document.getElementById('search-results').style.display='none';
   const addBtn=document.getElementById('modal-add-btn');
   addBtn.disabled=true;addBtn.style.opacity='0.4';addBtn.textContent='Välj ett bolag först';
-  setTimeout(()=>document.getElementById('m-search').focus(),100);
-}
-
-function searchCompany(query){
-  clearTimeout(searchTimer);
-  const q=query.trim();
-  const res=document.getElementById('search-results');
-  const hint=document.getElementById('search-hint');
-  if(q.length<2){res.style.display='none';return;}
-  document.getElementById('search-spinner').style.display='block';
-  searchTimer=setTimeout(()=>doSearch(q),400);
-}
-
-async function doSearch(q){
-  const res=document.getElementById('search-results');
-  const spinner=document.getElementById('search-spinner');
-  const key=fmpKey||'demo';
-  try{
-    const url=`https://financialmodelingprep.com/api/v3/search?query=${encodeURIComponent(q)}&limit=10&apikey=${key}`;
-    const resp=await fetch(url);
-    const data=await resp.json();
-    spinner.style.display='none';
-    if(!data||!data.length){
-      res.style.display='block';
-      res.innerHTML=`<div style="padding:16px;text-align:center;font-size:12px;color:var(--muted)">Inga resultat för "${q}"<br><span style="font-size:11px">Prova en annan stavning eller lägg till FMP-nyckel</span></div>`;
-      return;
-    }
-    res.style.display='block';
-    res.innerHTML=data.map(c=>{
-      const flag=getFlag(c.exchangeShortName||c.stockExchange||'');
-      const exch=c.exchangeShortName||c.stockExchange||'';
-      return`<div class="search-result-item" onclick="selectCompany(${JSON.stringify(c).replace(/"/g,'&quot;')})">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-          <div>
-            <div style="font-weight:500;font-size:13px;color:var(--blue-dark)">${flag} ${c.name||c.companyName}</div>
-            <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);margin-top:2px">${c.symbol} · ${exch}</div>
-          </div>
-          <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-align:right;flex-shrink:0">${c.currency||''}</div>
-        </div>
-      </div>`;
-    }).join('');
-  }catch(e){
-    spinner.style.display='none';
-    res.style.display='block';
-    res.innerHTML=`<div style="padding:16px;text-align:center;font-size:12px;color:var(--red)">Sökningen misslyckades.<br><span style="font-size:11px;color:var(--muted)">Kontrollera nätverksanslutning</span></div>`;
-  }
-}
-
-function getFlag(exchange){
-  const se=['STO','XSTO','NGM','XNGM','SSE'];
-  const us=['NASDAQ','NYSE','AMEX','OTC','XNYS','XNAS','NYSEArca'];
-  const uk=['LSE','XLON'];
-  const de=['XETRA','FRA'];
-  const s=exchange.toUpperCase();
-  if(se.some(x=>s.includes(x)))return'🇸🇪';
-  if(us.some(x=>s.includes(x)))return'🇺🇸';
-  if(uk.some(x=>s.includes(x)))return'🇬🇧';
-  if(de.some(x=>s.includes(x)))return'🇩🇪';
-  return'🌐';
-}
-
-function selectCompany(c){
-  selectedCompany=c;
-  // Hide search, show confirm card
-  document.getElementById('modal-step1').style.display='none';
-  document.getElementById('modal-step2').style.display='block';
-  const flag=getFlag(c.exchangeShortName||c.stockExchange||'');
-  const exch=c.exchangeShortName||c.stockExchange||'';
-  const card=document.getElementById('selected-company-card');
-  card.innerHTML=`
-    <div style="display:flex;justify-content:space-between;align-items:flex-start">
-      <div>
-        <div style="font-size:11px;font-family:'DM Mono',monospace;color:var(--muted);margin-bottom:4px">VALT BOLAG</div>
-        <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--blue-dark)">${flag} ${c.name||c.companyName}</div>
-        <div style="font-family:'DM Mono',monospace;font-size:11px;color:var(--muted2);margin-top:4px;display:flex;gap:12px">
-          <span>${c.symbol}</span>
-          <span>·</span>
-          <span>${exch}</span>
-          ${c.currency?`<span>·</span><span>${c.currency}</span>`:''}
-        </div>
-      </div>
-      <div style="font-size:24px">${flag}</div>
-    </div>`;
-  const addBtn=document.getElementById('modal-add-btn');
-  addBtn.disabled=false;addBtn.style.opacity='1';addBtn.textContent='Lägg till bolag';
-  setTimeout(()=>document.getElementById('m-price').focus(),100);
+  setTimeout(()=>document.getElementById('m-search')?.focus(),100);
 }
 
 function addStock(){
   if(!selectedCompany)return;
   const c=selectedCompany;
-  const flag=getFlag(c.exchangeShortName||c.stockExchange||'');
-  const exch=c.exchangeShortName||c.stockExchange||'';
-  const exchLabel=`${exch} ${flag}`;
+  const flag=getFlag(c.exchange,c.country);
   const s={
     id:'s'+Date.now(),
-    name:c.name||c.companyName,
-    ticker:c.symbol,
-    exchange:exchLabel,
+    name:c.name,
+    ticker:c.ticker,
+    exchange:`${c.exchange} ${flag}`,
     currency:c.currency||'',
-    fmpSymbol:c.symbol,
-    sector:'',
-    industry:'',
-    country:flag==='🇸🇪'?'SE':flag==='🇺🇸'?'US':'',
-    price:document.getElementById('m-price').value.trim(),
+    country:c.country||'',
+    sector:c.sector||'',
+    industry:c.branch||c.industry||'',
+    bdInsId:c.insId||null,          // Börsdata instrument ID
+    bdConnected:c.source==='borsdata',
+    price:document.getElementById('m-price')?.value?.trim()||'',
     thesis:'',revisions:[],notes:[],news:[],tags:[],checks:{},
     bull:'',bear:'',sell_thesis:'',sell_time:'',sell_size:'',sources:''
   };
   stocks.push(s);save();closeModal();selectedCompany=null;renderSidebar();navStock(s.id);
 }
 document.getElementById('moverlay').addEventListener('click',e=>{if(e.target===document.getElementById('moverlay'))closeModal();});
+
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 function boot(){renderSidebar();renderDash();}
