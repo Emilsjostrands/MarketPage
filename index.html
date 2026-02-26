@@ -518,9 +518,9 @@ const CHECKLIST=[
   {id:'c7',section:'Beslut',label:'Jag ångrar inte beslutet imorgon om jag har fel',desc:'Kan du leva med beslutet oavsett utfall, givet den information du har idag?'},
 ];
 
-async function load(){try{const r=await window.storage.get('pv5-stocks');if(r)stocks=JSON.parse(r.value);}catch(e){stocks=[];}try{const r=await window.storage.get('pv5-apikey');if(r)apiKey=r.value;}catch(e){}boot();}
-async function save(){try{await window.storage.set('pv5-stocks',JSON.stringify(stocks));}catch(e){}}
-async function saveApiKey(k){apiKey=k;try{await window.storage.set('pv5-apikey',k);}catch(e){}}
+function load(){try{const r=localStorage.getItem('pv5-stocks');if(r)stocks=JSON.parse(r);}catch(e){stocks=[];}try{const r=localStorage.getItem('pv5-apikey');if(r)apiKey=r;}catch(e){}boot();}
+function save(){try{localStorage.setItem('pv5-stocks',JSON.stringify(stocks));}catch(e){}}
+function saveApiKey(k){apiKey=k;try{localStorage.setItem('pv5-apikey',k);}catch(e){}}
 
 function navPage(id,el){
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
@@ -882,11 +882,11 @@ let searchTimer = null;
 let bdInstruments = null;
 
 async function loadKeys(){
-  try{const r=await window.storage.get('pv5-bdkey');if(r&&r.value){borsdataKey=r.value;const el=document.getElementById('m-bd-key');if(el)el.value=borsdataKey;}}catch(e){}
+  try{const r=localStorage.getItem('pv5-bdkey');if(r){borsdataKey=r;const el=document.getElementById('m-bd-key');if(el)el.value=borsdataKey;}}catch(e){}
 }
 async function saveBorsdataKey(k){
   borsdataKey=k.trim();
-  try{await window.storage.set('pv5-bdkey',borsdataKey);}catch(e){}
+  try{localStorage.setItem('pv5-bdkey',borsdataKey);}catch(e){}
   // Reload instruments cache when key changes
   bdInstruments=null;
   updateModalKeyStatus();
