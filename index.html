@@ -370,6 +370,76 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 .mbtns{display:flex;gap:10px;margin-top:20px;}
 .mbtns .btn,.mbtns .bg{flex:1;justify-content:center;}
 
+/* ── MACRO CALENDAR ── */
+.macro-cal{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:16px;box-shadow:0 1px 3px rgba(30,58,95,0.06);}
+.macro-cal-h{padding:13px 18px;background:var(--s2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.macro-cal-title{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.12em;display:flex;align-items:center;gap:7px;}
+.macro-cal-updated{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);}
+.macro-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:0;}
+.macro-event{padding:12px 16px;border-right:1px solid var(--border);border-bottom:1px solid var(--border);transition:background 0.15s;}
+.macro-event:hover{background:var(--s2);}
+.macro-event:nth-child(3n){border-right:none;}
+.macro-event-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:4px;}
+.macro-event-name{font-size:12px;font-weight:500;color:var(--blue-dark);}
+.macro-event-badge{font-family:'DM Mono',monospace;font-size:9px;padding:2px 7px;border-radius:10px;white-space:nowrap;flex-shrink:0;}
+.macro-fed{background:rgba(45,106,159,0.1);color:var(--blue-mid);border:1px solid rgba(45,106,159,0.2);}
+.macro-riksbank{background:rgba(184,134,11,0.1);color:var(--gold);border:1px solid rgba(184,134,11,0.2);}
+.macro-ecb{background:rgba(123,94,167,0.1);color:var(--co);border:1px solid rgba(123,94,167,0.2);}
+.macro-event-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--blue-mid);font-weight:500;}
+.macro-event-days{font-family:'DM Mono',monospace;font-size:9px;margin-top:2px;}
+.macro-event-note{font-size:11px;color:var(--muted2);margin-top:3px;line-height:1.4;}
+.macro-past{opacity:0.45;}
+
+/* ── RISKS ── */
+.risk-section{margin-top:14px;}
+.risk-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--red);text-transform:uppercase;letter-spacing:0.15em;margin-bottom:8px;display:flex;justify-content:space-between;align-items:center;}
+.risk-item{display:flex;align-items:flex-start;gap:8px;background:#fff;border:1px solid var(--border);border-radius:7px;padding:9px 12px;margin-bottom:6px;transition:border-color 0.15s;}
+.risk-item:hover{border-color:rgba(192,57,43,0.3);}
+.risk-dot{width:6px;height:6px;border-radius:50%;background:var(--red);flex-shrink:0;margin-top:5px;}
+.risk-text{flex:1;font-size:12px;color:var(--text);line-height:1.6;background:transparent;border:none;outline:none;resize:none;font-family:'Sora',sans-serif;min-height:20px;}
+.risk-del{font-size:11px;color:var(--muted);cursor:pointer;flex-shrink:0;transition:color 0.15s;padding:0 2px;}
+.risk-del:hover{color:var(--red);}
+.risk-empty{font-size:11px;color:var(--muted);font-style:italic;padding:6px 0;}
+.risk-add-row{display:flex;gap:8px;margin-top:6px;}
+.risk-add-input{flex:1;background:#fff;border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'Sora',sans-serif;font-size:12px;outline:none;transition:border-color 0.15s;}
+.risk-add-input:focus{border-color:rgba(192,57,43,0.4);}
+
+/* ── CATALYST TIMELINE ── */
+.cat-panel{background:var(--s1);border:1px solid var(--border);border-radius:10px;overflow:hidden;margin-bottom:12px;}
+.cat-panel-h{padding:12px 16px;background:var(--s2);border-bottom:1px solid var(--border);display:flex;justify-content:space-between;align-items:center;}
+.cat-panel-title{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted2);text-transform:uppercase;letter-spacing:0.12em;display:flex;align-items:center;gap:7px;}
+.cat-panel-title span{font-size:13px;}
+.cat-body{padding:12px 16px;}
+.cat-empty{font-size:11px;color:var(--muted);font-style:italic;padding:4px 0 8px;}
+.cat-item{display:flex;align-items:flex-start;gap:10px;padding:8px 0;border-bottom:1px solid var(--border);}
+.cat-item:last-child{border-bottom:none;}
+.cat-date-col{flex-shrink:0;width:80px;}
+.cat-date{font-family:'DM Mono',monospace;font-size:10px;color:var(--blue-mid);font-weight:500;}
+.cat-date.past{color:var(--muted);}
+.cat-days{font-family:'DM Mono',monospace;font-size:9px;margin-top:2px;}
+.cat-days.soon{color:var(--red);}
+.cat-days.upcoming{color:var(--gold);}
+.cat-days.future{color:var(--muted);}
+.cat-days.past{color:var(--muted);}
+.cat-content{flex:1;}
+.cat-name{font-size:12px;font-weight:500;color:var(--blue-dark);}
+.cat-note{font-size:11px;color:var(--muted2);margin-top:2px;line-height:1.5;}
+.cat-type-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px;}
+.cat-del{font-size:11px;color:var(--muted);cursor:pointer;padding:0 3px;transition:color 0.15s;flex-shrink:0;}
+.cat-del:hover{color:var(--red);}
+.cat-add-form{background:var(--s2);border-top:1px solid var(--border);padding:12px 16px;display:none;}
+.cat-add-form.open{display:block;}
+.cat-frow{display:grid;grid-template-columns:130px 1fr 120px;gap:8px;margin-bottom:8px;}
+
+/* Type colors */
+.cat-type-dot[data-t="rapport"]{background:#2d6a9f;}
+.cat-type-dot[data-t="rantebesked"]{background:#b8860b;}
+.cat-type-dot[data-t="utdelning"]{background:#2a7a4b;}
+.cat-type-dot[data-t="produkt"]{background:#7b5ea7;}
+.cat-type-dot[data-t="makro"]{background:#c0392b;}
+.cat-type-dot[data-t="bolagsstamma"]{background:#4a90c4;}
+.cat-type-dot[data-t="ovrigt"]{background:#8090a8;}
+
 @keyframes spin{to{transform:rotate(360deg)}}
 .search-result-item{padding:11px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.12s;}
 .search-result-item:last-child{border-bottom:none;}
@@ -408,6 +478,14 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
     <div class="stat"><div class="sl">Med grundtes</div><div class="sv" id="s-thesis">0</div><div class="ss">Bolag med analys</div></div>
     <div class="stat"><div class="sl">Anteckningar</div><div class="sv" id="s-notes">0</div><div class="ss">Totalt sparade</div></div>
     <div class="stat"><div class="sl">Nyheter sparade</div><div class="sv" id="s-news">0</div><div class="ss">Totalt</div></div>
+  </div>
+  <!-- MACRO CALENDAR -->
+  <div class="macro-cal">
+    <div class="macro-cal-h">
+      <div class="macro-cal-title"><span>🌍</span>Makrokalender — Fed · Riksbanken · ECB</div>
+      <div class="macro-cal-updated" id="macroUpdated"></div>
+    </div>
+    <div class="macro-grid" id="macroGrid"></div>
   </div>
   <div class="g2">
     <div class="card"><div class="ct">Innehav · Snabbvy</div><table class="ht"><thead><tr><th>Bolag</th><th>Ticker</th><th>Börs</th><th>Kurs</th></tr></thead><tbody id="dashTbody"></tbody></table></div>
@@ -518,6 +596,115 @@ const CHECKLIST=[
   {id:'c7',section:'Beslut',label:'Jag ångrar inte beslutet imorgon om jag har fel',desc:'Kan du leva med beslutet oavsett utfall, givet den information du har idag?'},
 ];
 
+// ══ MAKROKALENDER ══
+// Uppdatera datumen här när nya möten annonseras.
+// Fed: presskonferens efter FOMC-möte (oftast 19:00 ET = 01:00 svensk tid nästa dag)
+// Riksbanken: penningpolitiskt beslut
+// ECB: räntebesked
+const MACRO_EVENTS = [
+  // ── FED 2025 ──
+  {date:'2025-03-19',name:'Fed räntebesked',org:'fed',note:'FOMC-möte · Presskonferens Powell'},
+  {date:'2025-05-07',name:'Fed räntebesked',org:'fed',note:'FOMC-möte · Presskonferens Powell'},
+  {date:'2025-06-18',name:'Fed räntebesked',org:'fed',note:'FOMC-möte · Summary of Economic Projections'},
+  {date:'2025-07-30',name:'Fed räntebesked',org:'fed',note:'FOMC-möte'},
+  {date:'2025-09-17',name:'Fed räntebesked',org:'fed',note:'FOMC-möte · Summary of Economic Projections'},
+  {date:'2025-10-29',name:'Fed räntebesked',org:'fed',note:'FOMC-möte'},
+  {date:'2025-12-10',name:'Fed räntebesked',org:'fed',note:'FOMC-möte · Summary of Economic Projections'},
+  // ── FED 2026 ──
+  {date:'2026-01-28',name:'Fed räntebesked',org:'fed',note:'FOMC-möte'},
+  {date:'2026-03-18',name:'Fed räntebesked',org:'fed',note:'FOMC-möte · Summary of Economic Projections'},
+  {date:'2026-04-29',name:'Fed räntebesked',org:'fed',note:'FOMC-möte'},
+  {date:'2026-06-17',name:'Fed räntebesked',org:'fed',note:'FOMC-möte · Summary of Economic Projections'},
+  {date:'2026-07-29',name:'Fed räntebesked',org:'fed',note:'FOMC-möte'},
+  {date:'2026-09-16',name:'Fed räntebesked',org:'fed',note:'FOMC-möte · Summary of Economic Projections'},
+  {date:'2026-11-04',name:'Fed räntebesked',org:'fed',note:'FOMC-möte'},
+  {date:'2026-12-16',name:'Fed räntebesked',org:'fed',note:'FOMC-möte · Summary of Economic Projections'},
+  // ── RIKSBANKEN 2025 ──
+  {date:'2025-03-20',name:'Riksbanken räntebesked',org:'riksbank',note:'Penningpolitiskt beslut'},
+  {date:'2025-05-08',name:'Riksbanken räntebesked',org:'riksbank',note:'Penningpolitiskt beslut · Rapport'},
+  {date:'2025-06-26',name:'Riksbanken räntebesked',org:'riksbank',note:'Penningpolitiskt beslut'},
+  {date:'2025-09-18',name:'Riksbanken räntebesked',org:'riksbank',note:'Penningpolitiskt beslut · Rapport'},
+  {date:'2025-11-06',name:'Riksbanken räntebesked',org:'riksbank',note:'Penningpolitiskt beslut'},
+  // ── RIKSBANKEN 2026 ──
+  {date:'2026-02-05',name:'Riksbanken räntebesked',org:'riksbank',note:'Penningpolitiskt beslut · Rapport'},
+  {date:'2026-03-26',name:'Riksbanken räntebesked',org:'riksbank',note:'Penningpolitiskt beslut'},
+  {date:'2026-05-07',name:'Riksbanken räntebesked',org:'riksbank',note:'Penningpolitiskt beslut · Rapport'},
+  {date:'2026-06-25',name:'Riksbanken räntebesked',org:'riksbank',note:'Penningpolitiskt beslut'},
+  {date:'2026-09-17',name:'Riksbanken räntebesked',org:'riksbank',note:'Penningpolitiskt beslut · Rapport'},
+  {date:'2026-11-05',name:'Riksbanken räntebesked',org:'riksbank',note:'Penningpolitiskt beslut'},
+  // ── ECB 2025 ──
+  {date:'2025-04-17',name:'ECB räntebesked',org:'ecb',note:'Penningpolitiskt möte · Lagarde presskonferens'},
+  {date:'2025-06-05',name:'ECB räntebesked',org:'ecb',note:'Penningpolitiskt möte'},
+  {date:'2025-07-24',name:'ECB räntebesked',org:'ecb',note:'Penningpolitiskt möte'},
+  {date:'2025-09-11',name:'ECB räntebesked',org:'ecb',note:'Penningpolitiskt möte'},
+  {date:'2025-10-30',name:'ECB räntebesked',org:'ecb',note:'Penningpolitiskt möte'},
+  {date:'2025-12-18',name:'ECB räntebesked',org:'ecb',note:'Penningpolitiskt möte'},
+  // ── ECB 2026 ──
+  {date:'2026-01-22',name:'ECB räntebesked',org:'ecb',note:'Penningpolitiskt möte'},
+  {date:'2026-03-05',name:'ECB räntebesked',org:'ecb',note:'Penningpolitiskt möte'},
+  {date:'2026-04-16',name:'ECB räntebesked',org:'ecb',note:'Penningpolitiskt möte'},
+  {date:'2026-06-04',name:'ECB räntebesked',org:'ecb',note:'Penningpolitiskt möte'},
+  {date:'2026-07-23',name:'ECB räntebesked',org:'ecb',note:'Penningpolitiskt möte'},
+  {date:'2026-09-10',name:'ECB räntebesked',org:'ecb',note:'Penningpolitiskt möte'},
+  {date:'2026-10-29',name:'ECB räntebesked',org:'ecb',note:'Penningpolitiskt möte'},
+  {date:'2026-12-17',name:'ECB räntebesked',org:'ecb',note:'Penningpolitiskt möte'},
+];
+
+// Uppdaterades senast: februari 2026
+const MACRO_LAST_UPDATED = 'Uppdaterad feb 2026';
+
+function renderMacroCalendar(){
+  const grid = document.getElementById('macroGrid');
+  const updEl = document.getElementById('macroUpdated');
+  if(!grid) return;
+  if(updEl) updEl.textContent = MACRO_LAST_UPDATED;
+
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  // Show: last 1 past event per org + all upcoming, max 12 total upcoming
+  const sorted = [...MACRO_EVENTS].sort((a,b)=>new Date(a.date)-new Date(b.date));
+
+  // Find last past per org
+  const orgs = ['fed','riksbank','ecb'];
+  let toShow = [];
+  orgs.forEach(org=>{
+    const past = sorted.filter(e=>e.org===org && new Date(e.date)<today);
+    if(past.length) toShow.push(past[past.length-1]);
+  });
+  // Add upcoming (next 9)
+  const upcoming = sorted.filter(e=>new Date(e.date)>=today).slice(0,9);
+  toShow = [...toShow, ...upcoming];
+  // Sort again
+  toShow.sort((a,b)=>new Date(a.date)-new Date(b.date));
+
+  grid.innerHTML = toShow.map(e=>{
+    const d = new Date(e.date);
+    const diff = Math.round((d-today)/(1000*60*60*24));
+    const isPast = diff < 0;
+    let daysLabel='', daysClass='';
+    if(isPast){ daysLabel=`${Math.abs(diff)}d sedan`; daysClass='macro-past'; }
+    else if(diff===0){ daysLabel='Idag'; daysClass=''; }
+    else if(diff===1){ daysLabel='Imorgon'; daysClass=''; }
+    else if(diff<=7){ daysLabel=`Om ${diff} dagar`; daysClass=''; }
+    else if(diff<=30){ daysLabel=`Om ${diff} dagar`; daysClass=''; }
+    else { daysLabel=`Om ${diff} dagar`; daysClass=''; }
+
+    const badgeClass = e.org==='fed'?'macro-fed':e.org==='riksbank'?'macro-riksbank':'macro-ecb';
+    const badgeLabel = e.org==='fed'?'Fed':e.org==='riksbank'?'Riksbanken':'ECB';
+    const daysColor = isPast?'var(--muted)':diff<=7?'var(--red)':diff<=30?'var(--gold)':'var(--muted2)';
+
+    return `<div class="macro-event${isPast?' macro-past':''}">
+      <div class="macro-event-top">
+        <div class="macro-event-name">${e.name}</div>
+        <div class="macro-event-badge ${badgeClass}">${badgeLabel}</div>
+      </div>
+      <div class="macro-event-date">${d.toLocaleDateString('sv-SE',{day:'numeric',month:'long',year:'numeric'})}</div>
+      <div class="macro-event-days" style="color:${daysColor}">${daysLabel}</div>
+      ${e.note?`<div class="macro-event-note">${e.note}</div>`:''}
+    </div>`;
+  }).join('');
+}
+
 function load(){try{const r=localStorage.getItem('pv5-stocks');if(r)stocks=JSON.parse(r);}catch(e){stocks=[];}try{const r=localStorage.getItem('pv5-apikey');if(r)apiKey=r;}catch(e){}boot();}
 function save(){try{localStorage.setItem('pv5-stocks',JSON.stringify(stocks));}catch(e){}}
 function saveApiKey(k){apiKey=k;try{localStorage.setItem('pv5-apikey',k);}catch(e){}}
@@ -542,6 +729,7 @@ function navStock(id,el){
 function renderSidebar(){document.getElementById('stockNav').innerHTML=stocks.map(s=>`<div class="sni${activeId===s.id?' active':''}" onclick="navStock('${s.id}',this)"><span style="font-size:11px">${s.exchange.includes('🇸🇪')?'🇸🇪':'🇺🇸'}</span><span class="sni-name">${s.name}</span>${s.price?`<span class="sni-price">${s.price}</span>`:''}</div>`).join('');}
 
 function renderDash(){
+  renderMacroCalendar();
   document.getElementById('dashDate').innerHTML=new Date().toLocaleDateString('sv-SE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).toUpperCase();
   const se=stocks.filter(s=>s.exchange.includes('🇸🇪')).length;
   document.getElementById('s-count').textContent=stocks.length;
@@ -649,8 +837,20 @@ function renderStock(){
       <div class="np-body">
         <div class="tbox">
           <div class="tbox-label"><span>⬡ Grundtes</span><button class="bg bsm" onclick="saveRevision()">+ Spara revision</button></div>
-          <textarea class="tbox-ta" id="thesis-ta" placeholder="Varför äger du detta bolag? Vad är din övertygelse?">${s.thesis||''}</textarea>
+          <textarea class="tbox-ta" id="thesis-ta" placeholder="Varför äger du detta bolag? Vad är din övertygelse? Vad måste vara sant för att tesen håller?">${s.thesis||''}</textarea>
           <div class="tbox-footer"><span class="saved-hint" id="thesis-hint">Spara för att logga en ny version</span><button class="btn bsm" onclick="saveThesis()">Spara grundtes</button></div>
+          <!-- RISKS -->
+          <div class="risk-section">
+            <div class="risk-label">
+              <span>⚠ Risker</span>
+              <span style="color:var(--muted);font-size:9px">${(s.risks||[]).length} identifierade</span>
+            </div>
+            <div id="risksList">${renderRisks(s)}</div>
+            <div class="risk-add-row">
+              <input class="risk-add-input" id="risk-input" placeholder="Lägg till en risk..." onkeydown="riskKeydown(event)">
+              <button class="btn bsm" onclick="addRisk()" style="flex-shrink:0">+</button>
+            </div>
+          </div>
         </div>
         ${(s.revisions||[]).length?`<div class="revlog"><div class="revlog-title"><span>Revisionslogg</span><span>${(s.revisions||[]).length} versioner</span></div>${(s.revisions||[]).slice().reverse().map(r=>`<div class="reventry"><div class="reventry-date">${r.date}</div>${r.text}</div>`).join('')}</div>`:''}
         <div style="height:1px;background:var(--border);margin:14px 0"></div>
@@ -663,7 +863,36 @@ function renderStock(){
         <div id="notesList">${renderNotes(s)}</div>
       </div>
     </div>
-    <div class="split-right">
+    <div class="split-right" style="display:flex;flex-direction:column;overflow:hidden;">
+      <!-- CATALYST TIMELINE -->
+      <div class="cat-panel" style="flex-shrink:0;border-radius:0;border-left:none;border-right:none;border-top:none;">
+        <div class="cat-panel-h">
+          <div class="cat-panel-title"><span>📅</span>Katalysatorer & kommande händelser</div>
+          <button class="bg bsm" onclick="toggleCatForm()">+ Lägg till</button>
+        </div>
+        <div class="cat-body" id="catBody" style="max-height:220px;overflow-y:auto;">${renderCatalysts(s)}</div>
+        <div class="cat-add-form" id="catAddForm">
+          <div class="cat-frow">
+            <input class="fi" id="cat-date" type="date" style="font-size:11px">
+            <input class="fi" id="cat-name" placeholder="Händelse (t.ex. Q2-rapport, Fed-möte...)" style="font-size:11px">
+            <select class="fsel" id="cat-type" style="font-size:11px">
+              <option value="rapport">📊 Rapport</option>
+              <option value="rantebesked">🏦 Räntebesked</option>
+              <option value="utdelning">💰 Utdelning</option>
+              <option value="produkt">🚀 Produkt/lansering</option>
+              <option value="makro">🌍 Makrohändelse</option>
+              <option value="bolagsstamma">🗳️ Bolagsstämma</option>
+              <option value="ovrigt">📌 Övrigt</option>
+            </select>
+          </div>
+          <textarea class="fi" id="cat-note" placeholder="Kort notering (valfritt)..." style="width:100%;min-height:40px;resize:none;font-size:11px;margin-bottom:8px"></textarea>
+          <div class="gap8">
+            <button class="btn bsm" onclick="saveCatalyst()">Spara</button>
+            <button class="bg bsm" onclick="toggleCatForm()">Avbryt</button>
+          </div>
+        </div>
+      </div>
+      <!-- CHAT -->
       <div class="chat-header">
         <span class="chat-title">🤖 AI-bollplank</span>
         <span class="chat-status${apiKey?' connected':''}" id="chatStatus">${apiKey?'Ansluten':'Ej ansluten'}</span>
@@ -755,6 +984,121 @@ async function fetchBdDetails(stockId){
   }catch(e){}
 }
 
+// ══ RISKS ══
+function renderRisks(s){
+  const risks=s.risks||[];
+  if(!risks.length) return `<div class="risk-empty">Inga risker identifierade ännu</div>`;
+  return risks.map((r,i)=>`
+    <div class="risk-item" id="risk-item-${i}">
+      <div class="risk-dot"></div>
+      <textarea class="risk-text" rows="1" onchange="updateRisk(${i},this.value)" oninput="autoResize(this)">${r}</textarea>
+      <span class="risk-del" onclick="deleteRisk(${i})">✕</span>
+    </div>`).join('');
+}
+function addRisk(){
+  const s=stocks.find(x=>x.id===activeId);if(!s)return;
+  const inp=document.getElementById('risk-input');
+  const val=inp.value.trim();if(!val)return;
+  if(!s.risks)s.risks=[];
+  s.risks.push(val);
+  save();
+  inp.value='';
+  document.getElementById('risksList').innerHTML=renderRisks(s);
+  document.getElementById('risk-input').focus();
+  // Update count
+  const lbl=document.querySelector('.risk-label span:last-child');
+  if(lbl)lbl.textContent=s.risks.length+' identifierade';
+}
+function riskKeydown(e){if(e.key==='Enter'){e.preventDefault();addRisk();}}
+function updateRisk(i,val){
+  const s=stocks.find(x=>x.id===activeId);if(!s||!s.risks)return;
+  s.risks[i]=val;save();
+}
+function deleteRisk(i){
+  const s=stocks.find(x=>x.id===activeId);if(!s||!s.risks)return;
+  s.risks.splice(i,1);save();
+  document.getElementById('risksList').innerHTML=renderRisks(s);
+  const lbl=document.querySelector('.risk-label span:last-child');
+  if(lbl)lbl.textContent=s.risks.length+' identifierade';
+}
+function autoResize(ta){ta.style.height='auto';ta.style.height=ta.scrollHeight+'px';}
+
+// ══ CATALYSTS ══
+const CAT_TYPES={
+  rapport:{label:'Rapport',emoji:'📊'},
+  rantebesked:{label:'Räntebesked',emoji:'🏦'},
+  utdelning:{label:'Utdelning',emoji:'💰'},
+  produkt:{label:'Produkt/lansering',emoji:'🚀'},
+  makro:{label:'Makrohändelse',emoji:'🌍'},
+  bolagsstamma:{label:'Bolagsstämma',emoji:'🗳️'},
+  ovrigt:{label:'Övrigt',emoji:'📌'},
+};
+function renderCatalysts(s){
+  const cats=(s.catalysts||[]).slice().sort((a,b)=>new Date(a.date)-new Date(b.date));
+  if(!cats.length) return`<div class="cat-empty">Inga händelser tillagda — tryck + för att lägga till rapport, räntebesked, utdelning m.m.</div>`;
+  const today=new Date();today.setHours(0,0,0,0);
+  return cats.map((c,i)=>{
+    const d=new Date(c.date);
+    const diff=Math.round((d-today)/(1000*60*60*24));
+    const isPast=diff<0;
+    let daysLabel='',daysClass='';
+    if(isPast){daysLabel=`${Math.abs(diff)}d sedan`;daysClass='past';}
+    else if(diff===0){daysLabel='Idag';daysClass='soon';}
+    else if(diff<=7){daysLabel=`Om ${diff}d`;daysClass='soon';}
+    else if(diff<=30){daysLabel=`Om ${diff}d`;daysClass='upcoming';}
+    else{daysLabel=`Om ${diff}d`;daysClass='future';}
+    const t=CAT_TYPES[c.type]||CAT_TYPES.ovrigt;
+    return`<div class="cat-item" style="${isPast?'opacity:0.5':''}">
+      <div class="cat-type-dot" data-t="${c.type}"></div>
+      <div class="cat-date-col">
+        <div class="cat-date${isPast?' past':''}">${d.toLocaleDateString('sv-SE',{day:'numeric',month:'short'})}</div>
+        <div class="cat-days ${daysClass}">${daysLabel}</div>
+      </div>
+      <div class="cat-content">
+        <div class="cat-name">${t.emoji} ${c.name}</div>
+        ${c.note?`<div class="cat-note">${c.note}</div>`:''}
+      </div>
+      <span class="cat-del" onclick="deleteCatalyst(${i})">✕</span>
+    </div>`;
+  }).join('');
+}
+function toggleCatForm(){
+  const f=document.getElementById('catAddForm');
+  f.classList.toggle('open');
+  if(f.classList.contains('open')){
+    // Default date to today
+    const d=new Date();
+    document.getElementById('cat-date').value=d.toISOString().split('T')[0];
+    document.getElementById('cat-name').focus();
+  }
+}
+function saveCatalyst(){
+  const s=stocks.find(x=>x.id===activeId);if(!s)return;
+  const date=document.getElementById('cat-date').value;
+  const name=document.getElementById('cat-name').value.trim();
+  if(!date||!name)return;
+  if(!s.catalysts)s.catalysts=[];
+  s.catalysts.push({
+    id:'c'+Date.now(),
+    date,name,
+    type:document.getElementById('cat-type').value,
+    note:document.getElementById('cat-note').value.trim()
+  });
+  save();
+  document.getElementById('catBody').innerHTML=renderCatalysts(s);
+  document.getElementById('cat-name').value='';
+  document.getElementById('cat-note').value='';
+  document.getElementById('catAddForm').classList.remove('open');
+}
+function deleteCatalyst(i){
+  const s=stocks.find(x=>x.id===activeId);if(!s||!s.catalysts)return;
+  // Re-sort to match render order before deleting
+  s.catalysts.sort((a,b)=>new Date(a.date)-new Date(b.date));
+  s.catalysts.splice(i,1);
+  save();
+  document.getElementById('catBody').innerHTML=renderCatalysts(s);
+}
+
 function renderTags(s){return(s.tags||[]).map(t=>`<div class="tag">${t}<span class="tagx" onclick="removeTag('${t}')">×</span></div>`).join('')+`<div class="tag tagadd" onclick="startTagInput()">+ Tagg</div>`;}
 function removeTag(t){const s=stocks.find(x=>x.id===activeId);if(s){s.tags=(s.tags||[]).filter(x=>x!==t);save();document.getElementById('stockTags').innerHTML=renderTags(s);}}
 function startTagInput(){const s=stocks.find(x=>x.id===activeId);if(!s)return;const c=document.getElementById('stockTags'),a=c.querySelector('.tagadd'),i=document.createElement('input');i.className='taginput';i.placeholder='Ny tagg...';a.replaceWith(i);i.focus();i.onkeydown=e=>{if(e.key==='Enter'||e.key===','){e.preventDefault();const v=i.value.trim();if(v){if(!s.tags)s.tags=[];if(!s.tags.includes(v))s.tags.push(v);save();}c.innerHTML=renderTags(s);}if(e.key==='Escape')c.innerHTML=renderTags(s);};i.onblur=()=>setTimeout(()=>{if(document.contains(i))c.innerHTML=renderTags(s);},200);}
@@ -843,7 +1187,7 @@ async function sendChat(){
   msgs.innerHTML+=`<div class="msg msg-user"><div class="msg-name">Du</div><div class="msg-bubble">${msg}</div></div>`;
   msgs.innerHTML+=`<div class="msg msg-ai" id="typing-indicator"><div class="msg-name">Claude</div><div class="msg-bubble"><div class="typing"><span></span><span></span><span></span></div></div></div>`;
   msgs.scrollTop=msgs.scrollHeight;
-  const context=`Du är ett AI-bollplank för en investerare. Information om bolaget:\n\nBolag: ${s.name} (${s.ticker})\nKurs: ${s.price||'okänd'}\n\nGRUNDTES:\n${s.thesis||'(ingen grundtes)'}\n\nBULL-CASE:\n${s.bull||'(inget)'}\n\nBEAR-CASE:\n${s.bear||'(inget)'}\n\nSÄLJREGLER:\n${s.sell_thesis||'(inga)'}\n\nANTECKNINGAR:\n${(s.notes||[]).map(n=>`[${CL[n.cat]}] ${n.title}: ${n.body}`).join('\n')||'(inga)'}\n\nSvara på svenska. Var konkret och analytisk. Utmana investerarens antaganden konstruktivt. Håll svaren till 3-5 meningar om inget annat bes om.`;
+  const context=`Du är ett AI-bollplank för en investerare. Information om bolaget:\n\nBolag: ${s.name} (${s.ticker})\nKurs: ${s.price||'okänd'}\n\nGRUNDTES:\n${s.thesis||'(ingen grundtes)'}\n\nBULL-CASE:\n${s.bull||'(inget)'}\n\nBEAR-CASE:\n${s.bear||'(inget)'}\n\nSÄLJREGLER:\n${s.sell_thesis||'(inga)'}\n\nRISKER:\n${(s.risks||[]).map((r,i)=>`${i+1}. ${r}`).join('\n')||'(inga definierade)'}\n\nKATALYSATORER:\n${(s.catalysts||[]).sort((a,b)=>new Date(a.date)-new Date(b.date)).map(c=>`${c.date}: ${c.name}${c.note?' — '+c.note:''}`).join('\n')||'(inga)'}\n\nANTECKNINGAR:\n${(s.notes||[]).map(n=>`[${CL[n.cat]}] ${n.title}: ${n.body}`).join('\n')||'(inga)'}\n\nSvara på svenska. Var konkret och analytisk. Utmana investerarens antaganden konstruktivt. Håll svaren till 3-5 meningar om inget annat bes om.`;
   chatHistory.push({role:'user',content:msg});
   try{
     const resp=await fetch('https://api.anthropic.com/v1/messages',{method:'POST',headers:{'Content-Type':'application/json','x-api-key':apiKey,'anthropic-version':'2023-06-01','anthropic-dangerous-direct-browser-access':'true'},body:JSON.stringify({model:'claude-sonnet-4-20250514',max_tokens:600,system:context,messages:chatHistory})});
@@ -1110,7 +1454,7 @@ function addManually(){
     exchange:exch,
     country,
     currency:country==='SE'?'SEK':'USD',
-    sector:'',branch:'',source:'manual'
+    sector:'',branch:'',source:'manual',thesis:'',revisions:[],risks:[],catalysts:[],notes:[],news:[],tags:[],checks:{}
   }, false);
 }
 
@@ -1157,7 +1501,7 @@ function addStock(){
     bdInsId:c.insId||null,          // Börsdata instrument ID
     bdConnected:c.source==='borsdata',
     price:document.getElementById('m-price')?.value?.trim()||'',
-    thesis:'',revisions:[],notes:[],news:[],tags:[],checks:{},
+    thesis:'',revisions:[],risks:[],catalysts:[],notes:[],news:[],tags:[],checks:{},
     bull:'',bear:'',sell_thesis:'',sell_time:'',sell_size:'',sources:''
   };
   stocks.push(s);save();closeModal();selectedCompany=null;renderSidebar();navStock(s.id);
