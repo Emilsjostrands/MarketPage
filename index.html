@@ -471,6 +471,100 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 .migrate-banner{background:rgba(45,106,159,0.1);border:1px solid rgba(45,106,159,0.3);border-radius:8px;padding:12px 14px;margin:12px 0;font-size:12px;color:var(--blue-mid);line-height:1.6;}
 .migrate-banner strong{font-weight:600;}
 
+/* ══ MOBILE RESPONSIVE ══ */
+/* Hamburger button — hidden on desktop */
+.mob-bar{display:none;position:fixed;top:0;left:0;right:0;height:52px;background:var(--blue-dark);z-index:150;align-items:center;padding:0 16px;gap:12px;box-shadow:0 2px 8px rgba(30,58,95,0.2);}
+.mob-bar-logo{font-family:'Playfair Display',serif;font-size:16px;color:#f5f0e8;flex:1;}
+.mob-hamburger{width:36px;height:36px;display:flex;flex-direction:column;justify-content:center;gap:5px;cursor:pointer;padding:4px;}
+.mob-hamburger span{display:block;height:2px;background:#f5f0e8;border-radius:2px;transition:all 0.2s;}
+.mob-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.mob-hamburger.open span:nth-child(2){opacity:0;}
+.mob-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* Sidebar overlay on mobile */
+.sidebar-overlay{display:none;position:fixed;inset:0;background:rgba(30,58,95,0.5);z-index:140;backdrop-filter:blur(2px);}
+.sidebar-overlay.open{display:block;}
+
+@media(max-width:768px){
+  /* Show mobile bar, hide sidebar by default */
+  .mob-bar{display:flex;}
+  body{padding-top:52px;}
+  html,body{overflow:auto;}
+
+  .sidebar{
+    position:fixed;
+    top:0;left:0;bottom:0;
+    z-index:145;
+    transform:translateX(-100%);
+    transition:transform 0.25s ease;
+    width:280px;
+  }
+  .sidebar.mob-open{transform:translateX(0);}
+
+  /* Main takes full width */
+  .layout{flex-direction:column;}
+  .main{width:100%;overflow:visible;}
+  .content{overflow:visible;padding:20px 16px 80px;}
+
+  /* Stats: 2 columns */
+  .stats{grid-template-columns:1fr 1fr;gap:10px;}
+
+  /* Dashboard grid: stack */
+  .g2{grid-template-columns:1fr;}
+
+  /* Macro calendar: 1 column */
+  .macro-grid{grid-template-columns:1fr;}
+
+  /* Portfolio grid: 1 column */
+  .pgrid{grid-template-columns:1fr;}
+
+  /* Hero: stack vertically */
+  .hero{padding:16px;}
+  .hero-top{flex-direction:column;gap:10px;}
+  .hero-bottom{grid-template-columns:1fr 1fr;gap:8px;}
+  .hprice{text-align:left;font-size:22px;}
+  .hprice-label{text-align:left;}
+  .hname{font-size:20px;}
+
+  /* Split layout: stack notes above chat */
+  .split{grid-template-columns:1fr;min-height:auto;}
+  .split-left{border-right:none;border-bottom:1px solid var(--border);max-height:500px;}
+  .split-right{max-height:420px;}
+
+  /* Cat form: stack fields */
+  .cat-frow{grid-template-columns:1fr;}
+
+  /* Bull/bear: stack */
+  .bbg{grid-template-columns:1fr;}
+
+  /* Page header: stack */
+  .ph{flex-direction:column;align-items:flex-start;gap:10px;margin-bottom:18px;}
+  .ph-r{display:none;}
+
+  /* Modal: full width */
+  .modal{width:calc(100vw - 32px);margin:16px;}
+  .moverlay{align-items:flex-end;padding-bottom:0;}
+  .modal{border-radius:16px 16px 0 0;padding:24px 20px;}
+
+  /* Tabs: smaller */
+  .stab{padding:8px 12px;font-size:11px;}
+
+  /* Content padding adjustments */
+  .np-body{padding:12px 14px;}
+  .sell-ta{min-height:70px;}
+  .bbta{min-height:90px;}
+  .tbox-ta{min-height:70px;}
+
+  /* Login box */
+  .login-box{width:calc(100vw - 32px);padding:28px 24px;}
+
+  /* Check score */
+  .check-score{flex-direction:column;text-align:center;}
+
+  /* Frow: stack on mobile */
+  .frow{grid-template-columns:1fr;}
+}
+
 @keyframes spin{to{transform:rotate(360deg)}}
 .search-result-item{padding:11px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.12s;}
 .search-result-item:last-child{border-bottom:none;}
@@ -518,6 +612,18 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
     </div>
   </div>
 </div>
+
+<!-- MOBILE TOP BAR -->
+<div class="mob-bar">
+  <div class="mob-hamburger" id="hamburger" onclick="toggleSidebar()">
+    <span></span><span></span><span></span>
+  </div>
+  <div class="mob-bar-logo">Portföljvy</div>
+  <div id="mobUserAvatar" style="width:30px;height:30px;border-radius:50%;background:rgba(74,144,196,0.4);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#f5f0e8;cursor:pointer" onclick="doLogout()">?</div>
+</div>
+
+<!-- SIDEBAR OVERLAY (mobile) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
 
 <div class="layout">
 <!-- SIDEBAR -->
@@ -863,6 +969,8 @@ async function load(){
       const email=currentUser.email||'';
       document.getElementById('userEmail').textContent=email;
       document.getElementById('userAvatar').textContent=email.charAt(0).toUpperCase();
+      const mobAv=document.getElementById('mobUserAvatar');
+      if(mobAv)mobAv.textContent=email.charAt(0).toUpperCase();
       // Load data
       await loadData();
       // Load API keys from localStorage (keys stay local, not in DB)
@@ -970,6 +1078,7 @@ function navPage(id,el){
   if(id==='dash')renderDash();
   if(id==='portfolio')renderPgrid();
   if(id==='onepager')document.getElementById('opDate').innerHTML=new Date().toLocaleDateString('sv-SE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).toUpperCase();
+  closeSidebar();
 }
 function navStock(id,el){
   activeId=id;activeTab='anteckningar';noteFilter='all';chatHistory=[];
@@ -978,6 +1087,7 @@ function navStock(id,el){
   document.querySelectorAll('.ni,.sni').forEach(n=>n.classList.remove('active'));
   if(el)el.classList.add('active');
   renderStock();
+  closeSidebar();
 }
 function renderSidebar(){document.getElementById('stockNav').innerHTML=stocks.map(s=>`<div class="sni${activeId===s.id?' active':''}" onclick="navStock('${s.id}',this)"><span style="font-size:11px">${s.exchange.includes('🇸🇪')?'🇸🇪':'🇺🇸'}</span><span class="sni-name">${s.name}</span>${s.price?`<span class="sni-price">${s.price}</span>`:''}</div>`).join('');}
 
@@ -1762,6 +1872,21 @@ function addStock(){
 document.getElementById('moverlay').addEventListener('click',e=>{if(e.target===document.getElementById('moverlay'))closeModal();});
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+
+// ══ MOBILE SIDEBAR ══
+function toggleSidebar(){
+  const sidebar=document.querySelector('.sidebar');
+  const overlay=document.getElementById('sidebarOverlay');
+  const hamburger=document.getElementById('hamburger');
+  sidebar.classList.toggle('mob-open');
+  overlay.classList.toggle('open');
+  hamburger.classList.toggle('open');
+}
+function closeSidebar(){
+  document.querySelector('.sidebar').classList.remove('mob-open');
+  document.getElementById('sidebarOverlay').classList.remove('open');
+  document.getElementById('hamburger').classList.remove('open');
+}
 
 function boot(){renderSidebar();renderDash();}
 load(); // Initializes Supabase auth listener
