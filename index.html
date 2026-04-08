@@ -961,8 +961,11 @@ function showUserMenu(){
 // ── SUPABASE DATA ──
 async function load(){
   // Listen for auth state changes
+  let booted=false;
   supa.auth.onAuthStateChange(async(event,session)=>{
     if(session?.user){
+      // Ignore duplicate SIGNED_IN events
+      if(currentUser?.id===session.user.id&&booted)return;
       currentUser=session.user;
       document.getElementById('loginScreen').classList.add('hidden');
       // Update user menu
@@ -975,29 +978,40 @@ async function load(){
       await loadData();
       // Load API keys from localStorage (keys stay local, not in DB)
       try{const r=localStorage.getItem('pv5-apikey');if(r)apiKey=r;}catch(e){}
-      boot();
+      if(!booted){booted=true;boot();}
+      else{renderSidebar();renderDash();}
     } else {
-      currentUser=null;
+      currentUser=null;booted=false;
       document.getElementById('loginScreen').classList.remove('hidden');
+      detectSignupStatus();
     }
   });
   // Check existing session
   const {data:{session}}=await supa.auth.getSession();
   if(!session){
     document.getElementById('loginScreen').classList.remove('hidden');
-    detectSignupStatus();
+    // detectSignupStatus called in onAuthStateChange above
   }
 }
 
 async function loadData(){
   try{
     const {data,error}=await supa.from('portfolj_stocks').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:true});
-    if(error){console.error('Load error:',error);stocks=[];return;}
-    // Each row has: id, user_id, stock_id, data (jsonb)
+    if(error){
+      console.error('Load error:',error);
+      // Common: table doesn't exist yet
+      if(error.code==='42P01'){
+        alert('Databasetabellen saknas. Kör SQL-skriptet i Supabase SQL Editor för att skapa den.');
+      }
+      stocks=[];return;
+    }
     stocks=(data||[]).map(row=>({...row.data,_rowId:row.id}));
-    // Migration: check if localStorage has data to import
+    console.log(`Loaded ${stocks.length} stocks from Supabase`);
     checkMigration();
-  }catch(e){console.error(e);stocks=[];}
+  }catch(e){
+    console.error('loadData exception:',e);
+    stocks=[];
+  }
 }
 
 function checkMigration(){
@@ -1089,7 +1103,16 @@ function navStock(id,el){
   renderStock();
   closeSidebar();
 }
-function renderSidebar(){document.getElementById('stockNav').innerHTML=stocks.map(s=>`<div class="sni${activeId===s.id?' active':''}" onclick="navStock('${s.id}',this)"><span style="font-size:11px">${s.exchange.includes('🇸🇪')?'🇸🇪':'🇺🇸'}</span><span class="sni-name">${s.name}</span>${s.price?`<span class="sni-price">${s.price}</span>`:''}</div>`).join('');}
+function renderSidebar(){
+  document.getElementById('stockNav').innerHTML=stocks.map(s=>{
+    const flag=s.country==='SE'||(s.exchange||'').includes('🇸🇪')||(s.exchange||'').toUpperCase().includes('STO')?'🇸🇪':'🇺🇸';
+    return`<div class="sni${activeId===s.id?' active':''}" onclick="navStock('${s.id}',this)">
+      <span style="font-size:11px">${flag}</span>
+      <span class="sni-name">${s.name}</span>
+      ${s.closePrice||s.price?`<span class="sni-price">${s.closePrice||s.price}</span>`:''}
+    </div>`;
+  }).join('');
+}
 
 function renderDash(){
   renderMacroCalendar();
