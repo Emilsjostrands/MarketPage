@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portföljvy</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;1,400&family=DM+Mono:wght@300;400;500&family=Sora:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <style>
 :root{
   /* ── LIGHT CREAM PALETTE ── */
@@ -440,6 +441,36 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 .cat-type-dot[data-t="bolagsstamma"]{background:#4a90c4;}
 .cat-type-dot[data-t="ovrigt"]{background:#8090a8;}
 
+/* ── LOGIN SCREEN ── */
+#loginScreen{position:fixed;inset:0;background:var(--bg);display:flex;align-items:center;justify-content:center;z-index:999;flex-direction:column;}
+#loginScreen.hidden{display:none;}
+.login-box{background:var(--s1);border:1px solid var(--border2);border-radius:16px;padding:40px 44px;width:380px;box-shadow:0 8px 32px rgba(30,58,95,0.12);}
+.login-logo{font-family:'Playfair Display',serif;font-size:26px;color:var(--blue-dark);margin-bottom:6px;}
+.login-sub{font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);letter-spacing:0.12em;text-transform:uppercase;margin-bottom:32px;}
+.login-label{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;display:block;margin-bottom:6px;margin-top:16px;}
+.login-input{width:100%;background:#fff;border:1px solid var(--border2);border-radius:8px;padding:10px 14px;color:var(--text);font-family:'Sora',sans-serif;font-size:13px;outline:none;transition:border-color 0.15s;}
+.login-input:focus{border-color:var(--blue-mid);}
+.login-btn{width:100%;background:var(--blue-dark);color:#f5f0e8;border:none;padding:11px;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:'Sora',sans-serif;margin-top:20px;transition:background 0.15s;}
+.login-btn:hover{background:var(--blue-mid);}
+.login-switch{font-size:12px;color:var(--muted2);text-align:center;margin-top:14px;}
+.login-switch a{color:var(--blue-mid);cursor:pointer;text-decoration:none;}
+.login-switch a:hover{text-decoration:underline;}
+.login-err{font-family:'DM Mono',monospace;font-size:10px;color:var(--red);margin-top:10px;text-align:center;min-height:16px;}
+.login-msg{font-family:'DM Mono',monospace;font-size:10px;color:var(--green);margin-top:10px;text-align:center;min-height:16px;}
+.login-divider{height:1px;background:var(--border);margin:20px 0;}
+
+/* User menu in sidebar */
+.user-menu{padding:12px 16px;border-top:1px solid rgba(255,255,255,0.1);margin-top:auto;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background 0.15s;}
+.user-menu:hover{background:rgba(255,255,255,0.07);}
+.user-avatar{width:28px;height:28px;border-radius:50%;background:rgba(74,144,196,0.4);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#f5f0e8;flex-shrink:0;}
+.user-email{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.6);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
+.user-logout{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.35);cursor:pointer;transition:color 0.15s;flex-shrink:0;}
+.user-logout:hover{color:rgba(245,240,232,0.8);}
+
+/* Migration banner */
+.migrate-banner{background:rgba(45,106,159,0.1);border:1px solid rgba(45,106,159,0.3);border-radius:8px;padding:12px 14px;margin:12px 0;font-size:12px;color:var(--blue-mid);line-height:1.6;}
+.migrate-banner strong{font-weight:600;}
+
 @keyframes spin{to{transform:rotate(360deg)}}
 .search-result-item{padding:11px 14px;cursor:pointer;border-bottom:1px solid var(--border);transition:background 0.12s;}
 .search-result-item:last-child{border-bottom:none;}
@@ -451,6 +482,42 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 </style>
 </head>
 <body>
+
+<!-- LOGIN SCREEN -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">Portföljvy</div>
+    <div class="login-sub" id="loginSub">Logga in för att fortsätta</div>
+
+    <!-- LOGIN -->
+    <div id="loginForm">
+      <label class="login-label">E-post</label>
+      <input class="login-input" id="loginEmail" type="email" placeholder="din@email.com" autocomplete="email">
+      <label class="login-label">Lösenord</label>
+      <input class="login-input" id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
+      <div class="login-err" id="loginErr"></div>
+      <button class="login-btn" onclick="doLogin()">Logga in</button>
+      <div class="login-switch" id="loginSwitchLink" style="display:none">
+        Inget konto? <a onclick="showRegister()">Skapa konto</a>
+      </div>
+      <div class="login-switch" id="loginInviteOnly" style="color:var(--muted)">
+        Kontakt för åtkomst: bjud in via Supabase
+      </div>
+    </div>
+
+    <!-- REGISTER (visas bara om signup är på) -->
+    <div id="registerForm" style="display:none">
+      <label class="login-label">E-post</label>
+      <input class="login-input" id="regEmail" type="email" placeholder="din@email.com">
+      <label class="login-label">Lösenord</label>
+      <input class="login-input" id="regPassword" type="password" placeholder="Minst 6 tecken" onkeydown="if(event.key==='Enter')doRegister()">
+      <div class="login-err" id="registerErr"></div>
+      <div class="login-msg" id="registerMsg"></div>
+      <button class="login-btn" onclick="doRegister()">Skapa konto</button>
+      <div class="login-switch">Har du konto? <a onclick="showLogin()">Logga in</a></div>
+    </div>
+  </div>
+</div>
 
 <div class="layout">
 <!-- SIDEBAR -->
@@ -464,6 +531,11 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
     <div class="ni" onclick="navPage('portfolio',this)"><span style="font-size:12px">▦</span>Alla bolag</div>
     <div id="stockNav"></div>
     <div class="addbtn" onclick="openModal()"><span style="font-size:15px">+</span> Lägg till bolag</div>
+  </div>
+  <div class="user-menu" onclick="showUserMenu()">
+    <div class="user-avatar" id="userAvatar">?</div>
+    <div class="user-email" id="userEmail">Laddar...</div>
+    <div class="user-logout" onclick="event.stopPropagation();doLogout()" title="Logga ut">↩</div>
   </div>
 </aside>
 
@@ -705,8 +777,189 @@ function renderMacroCalendar(){
   }).join('');
 }
 
-function load(){try{const r=localStorage.getItem('pv5-stocks');if(r)stocks=JSON.parse(r);}catch(e){stocks=[];}try{const r=localStorage.getItem('pv5-apikey');if(r)apiKey=r;}catch(e){}boot();}
-function save(){try{localStorage.setItem('pv5-stocks',JSON.stringify(stocks));}catch(e){}}
+// ══ SUPABASE SETUP ══
+const SUPA_URL = 'https://wjmloespkyixbfzczava.supabase.co';
+const SUPA_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6IndqbWxvZXNwa3lpeGJmemN6YXZhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU2NjA5MTksImV4cCI6MjA5MTIzNjkxOX0.T9x_L_CJgRXpUwWXx5odOyHeVuUIqPZ8EH7bEUuXWDs';
+const supa = supabase.createClient(SUPA_URL, SUPA_KEY);
+let currentUser = null;
+
+// ── AUTH ──
+// ── SIGNUP DETECTION ──
+async function detectSignupStatus(){
+  try{
+    const {error}=await supa.auth.signUp({
+      email:'__probe__@__detect__.invalid',
+      password:'__probe__'
+    });
+    const disabled=error&&(
+      error.message?.toLowerCase().includes('disabled')||
+      error.message?.toLowerCase().includes('not allowed')||
+      error.status===422
+    );
+    const switchLink=document.getElementById('loginSwitchLink');
+    const inviteOnly=document.getElementById('loginInviteOnly');
+    if(!disabled){
+      if(switchLink)switchLink.style.display='block';
+      if(inviteOnly)inviteOnly.style.display='none';
+    } else {
+      if(switchLink)switchLink.style.display='none';
+      if(inviteOnly)inviteOnly.style.display='block';
+    }
+  }catch(e){
+    // Network error — default to invite-only (safer)
+    const inviteOnly=document.getElementById('loginInviteOnly');
+    if(inviteOnly)inviteOnly.style.display='block';
+  }
+}
+
+function showLogin(){
+  document.getElementById('loginForm').style.display='block';
+  document.getElementById('registerForm').style.display='none';
+  document.getElementById('loginErr').textContent='';
+}
+function showRegister(){
+  document.getElementById('loginForm').style.display='none';
+  document.getElementById('registerForm').style.display='block';
+  document.getElementById('registerErr').textContent='';
+  document.getElementById('registerMsg').textContent='';
+}
+async function doLogin(){
+  const email=document.getElementById('loginEmail').value.trim();
+  const pw=document.getElementById('loginPassword').value;
+  const errEl=document.getElementById('loginErr');
+  errEl.textContent='Loggar in...';
+  const {data,error}=await supa.auth.signInWithPassword({email,password:pw});
+  if(error){errEl.textContent=error.message;return;}
+  errEl.textContent='';
+}
+async function doRegister(){
+  const email=document.getElementById('regEmail').value.trim();
+  const pw=document.getElementById('regPassword').value;
+  const errEl=document.getElementById('registerErr');
+  const msgEl=document.getElementById('registerMsg');
+  errEl.textContent='';msgEl.textContent='Skapar konto...';
+  const {data,error}=await supa.auth.signUp({email,password:pw});
+  if(error){errEl.textContent=error.message;msgEl.textContent='';return;}
+  msgEl.textContent='Konto skapat! Kontrollera din e-post för bekräftelse, logga sedan in.';
+}
+async function doLogout(){
+  await supa.auth.signOut();
+  currentUser=null;stocks=[];
+  document.getElementById('loginScreen').classList.remove('hidden');
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+}
+function showUserMenu(){
+  // Simple: just show email in a toast or do nothing — logout is the arrow button
+}
+
+// ── SUPABASE DATA ──
+async function load(){
+  // Listen for auth state changes
+  supa.auth.onAuthStateChange(async(event,session)=>{
+    if(session?.user){
+      currentUser=session.user;
+      document.getElementById('loginScreen').classList.add('hidden');
+      // Update user menu
+      const email=currentUser.email||'';
+      document.getElementById('userEmail').textContent=email;
+      document.getElementById('userAvatar').textContent=email.charAt(0).toUpperCase();
+      // Load data
+      await loadData();
+      // Load API keys from localStorage (keys stay local, not in DB)
+      try{const r=localStorage.getItem('pv5-apikey');if(r)apiKey=r;}catch(e){}
+      boot();
+    } else {
+      currentUser=null;
+      document.getElementById('loginScreen').classList.remove('hidden');
+    }
+  });
+  // Check existing session
+  const {data:{session}}=await supa.auth.getSession();
+  if(!session){
+    document.getElementById('loginScreen').classList.remove('hidden');
+    detectSignupStatus();
+  }
+}
+
+async function loadData(){
+  try{
+    const {data,error}=await supa.from('portfolj_stocks').select('*').eq('user_id',currentUser.id).order('created_at',{ascending:true});
+    if(error){console.error('Load error:',error);stocks=[];return;}
+    // Each row has: id, user_id, stock_id, data (jsonb)
+    stocks=(data||[]).map(row=>({...row.data,_rowId:row.id}));
+    // Migration: check if localStorage has data to import
+    checkMigration();
+  }catch(e){console.error(e);stocks=[];}
+}
+
+function checkMigration(){
+  try{
+    const local=localStorage.getItem('pv5-stocks');
+    if(local&&stocks.length===0){
+      const localStocks=JSON.parse(local);
+      if(localStocks&&localStocks.length>0){
+        // Show migration banner
+        showMigrationBanner(localStocks);
+      }
+    }
+  }catch(e){}
+}
+
+function showMigrationBanner(localStocks){
+  const banner=document.createElement('div');
+  banner.className='migrate-banner';
+  banner.id='migrateBanner';
+  banner.innerHTML=`<strong>📦 Vi hittade ${localStocks.length} bolag sparade lokalt i din webbläsare.</strong><br>Vill du importera dem till ditt konto så att de synkas överallt?<br><br><button class="btn bsm" onclick="migrateLocalData()">Importera nu</button> <button class="bg bsm" onclick="document.getElementById('migrateBanner').remove()">Hoppa över</button>`;
+  const content=document.querySelector('.content');
+  if(content)content.prepend(banner);
+}
+
+async function migrateLocalData(){
+  try{
+    const local=localStorage.getItem('pv5-stocks');
+    if(!local)return;
+    const localStocks=JSON.parse(local);
+    for(const s of localStocks){
+      await saveStock(s);
+    }
+    stocks=localStocks.map(s=>({...s}));
+    localStorage.removeItem('pv5-stocks');
+    document.getElementById('migrateBanner')?.remove();
+    renderSidebar();renderDash();
+    alert(`✓ ${localStocks.length} bolag importerade!`);
+  }catch(e){alert('Import misslyckades: '+e.message);}
+}
+
+async function saveStock(s){
+  if(!currentUser)return;
+  const payload={user_id:currentUser.id,stock_id:s.id,data:s};
+  if(s._rowId){
+    // Update existing
+    const {error}=await supa.from('portfolj_stocks').update({data:s}).eq('id',s._rowId);
+    if(error)console.error('Update error:',error);
+  } else {
+    // Insert new
+    const {data,error}=await supa.from('portfolj_stocks').insert(payload).select().single();
+    if(error){console.error('Insert error:',error);return;}
+    s._rowId=data.id;
+  }
+}
+
+async function deleteStock(stockId){
+  const s=stocks.find(x=>x.id===stockId);
+  if(!s||!s._rowId)return;
+  const {error}=await supa.from('portfolj_stocks').delete().eq('id',s._rowId);
+  if(error)console.error('Delete error:',error);
+}
+
+// Main save — saves current stock after any change
+async function save(){
+  const s=stocks.find(x=>x.id===activeId);
+  if(s)await saveStock(s);
+  // Also keep localStorage as offline backup
+  try{localStorage.setItem('pv5-stocks',JSON.stringify(stocks));}catch(e){}
+}
+
 function saveApiKey(k){apiKey=k;try{localStorage.setItem('pv5-apikey',k);}catch(e){}}
 
 function navPage(id,el){
@@ -1504,14 +1757,14 @@ function addStock(){
     thesis:'',revisions:[],risks:[],catalysts:[],notes:[],news:[],tags:[],checks:{},
     bull:'',bear:'',sell_thesis:'',sell_time:'',sell_size:'',sources:''
   };
-  stocks.push(s);save();closeModal();selectedCompany=null;renderSidebar();navStock(s.id);
+  stocks.push(s);saveStock(s).then(()=>{renderSidebar();});closeModal();selectedCompany=null;navStock(s.id);
 }
 document.getElementById('moverlay').addEventListener('click',e=>{if(e.target===document.getElementById('moverlay'))closeModal();});
 
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
 
 function boot(){renderSidebar();renderDash();}
-load();
+load(); // Initializes Supabase auth listener
 </script>
 </body>
 </html>
