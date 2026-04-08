@@ -578,7 +578,7 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 <body>
 
 <!-- LOGIN SCREEN -->
-<div id="loginScreen">
+<div id="loginScreen" class="hidden">
   <div class="login-box">
     <div class="login-logo">Portföljvy</div>
     <div class="login-sub" id="loginSub">Logga in för att fortsätta</div>
@@ -950,9 +950,11 @@ async function doRegister(){
 }
 async function doLogout(){
   await supa.auth.signOut();
-  currentUser=null;stocks=[];
-  document.getElementById('loginScreen').classList.remove('hidden');
+  currentUser=null;stocks=[];activeId=null;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.ni,.sni').forEach(n=>n.classList.remove('active'));
+  document.getElementById('stockNav').innerHTML='';
+  showLoginScreen();
 }
 function showUserMenu(){
   // Simple: just show email in a toast or do nothing — logout is the arrow button
@@ -960,38 +962,48 @@ function showUserMenu(){
 
 // ── SUPABASE DATA ──
 async function load(){
-  // Listen for auth state changes
-  let booted=false;
+  // Step 1: Check if there's an existing session
+  const {data:{session}}=await supa.auth.getSession();
+
+  if(session?.user){
+    // Already logged in — load data silently
+    await handleSession(session.user);
+  } else {
+    // No session — show login screen
+    showLoginScreen();
+  }
+
+  // Step 2: Listen for future auth changes (login/logout)
   supa.auth.onAuthStateChange(async(event,session)=>{
-    if(session?.user){
-      // Ignore duplicate SIGNED_IN events
-      if(currentUser?.id===session.user.id&&booted)return;
-      currentUser=session.user;
-      document.getElementById('loginScreen').classList.add('hidden');
-      // Update user menu
-      const email=currentUser.email||'';
-      document.getElementById('userEmail').textContent=email;
-      document.getElementById('userAvatar').textContent=email.charAt(0).toUpperCase();
-      const mobAv=document.getElementById('mobUserAvatar');
-      if(mobAv)mobAv.textContent=email.charAt(0).toUpperCase();
-      // Load data
-      await loadData();
-      // Load API keys from localStorage (keys stay local, not in DB)
-      try{const r=localStorage.getItem('pv5-apikey');if(r)apiKey=r;}catch(e){}
-      if(!booted){booted=true;boot();}
-      else{renderSidebar();renderDash();}
-    } else {
-      currentUser=null;booted=false;
-      document.getElementById('loginScreen').classList.remove('hidden');
-      detectSignupStatus();
+    if(event==='SIGNED_IN'&&session?.user){
+      await handleSession(session.user);
+    } else if(event==='SIGNED_OUT'){
+      currentUser=null;
+      stocks=[];
+      showLoginScreen();
     }
   });
-  // Check existing session
-  const {data:{session}}=await supa.auth.getSession();
-  if(!session){
-    document.getElementById('loginScreen').classList.remove('hidden');
-    // detectSignupStatus called in onAuthStateChange above
-  }
+}
+
+async function handleSession(user){
+  currentUser=user;
+  const email=user.email||'';
+  // Update UI
+  document.getElementById('loginScreen').classList.add('hidden');
+  document.getElementById('userEmail').textContent=email;
+  document.getElementById('userAvatar').textContent=email.charAt(0).toUpperCase();
+  const mobAv=document.getElementById('mobUserAvatar');
+  if(mobAv)mobAv.textContent=email.charAt(0).toUpperCase();
+  // Load data from Supabase
+  await loadData();
+  // Load API keys (stay local)
+  try{const r=localStorage.getItem('pv5-apikey');if(r)apiKey=r;}catch(e){}
+  boot();
+}
+
+function showLoginScreen(){
+  document.getElementById('loginScreen').classList.remove('hidden');
+  detectSignupStatus();
 }
 
 async function loadData(){
@@ -1117,22 +1129,22 @@ function renderSidebar(){
 function renderDash(){
   renderMacroCalendar();
   document.getElementById('dashDate').innerHTML=new Date().toLocaleDateString('sv-SE',{weekday:'long',day:'numeric',month:'long',year:'numeric'}).toUpperCase();
-  const se=stocks.filter(s=>s.exchange.includes('🇸🇪')).length;
+  const se=stocks.filter(s=>s.country==='SE'||(s.exchange||'').includes('🇸🇪')||(s.exchange||'').toUpperCase().includes('STO')).length;
   document.getElementById('s-count').textContent=stocks.length;
   document.getElementById('s-break').textContent=`${se} SE · ${stocks.length-se} US`;
   document.getElementById('s-thesis').textContent=stocks.filter(s=>s.thesis&&s.thesis.trim().length>5).length;
   document.getElementById('s-notes').textContent=stocks.reduce((a,s)=>a+(s.notes||[]).length,0);
   document.getElementById('s-news').textContent=stocks.reduce((a,s)=>a+(s.news||[]).length,0);
   const tb=document.getElementById('dashTbody');
-  tb.innerHTML=stocks.length?stocks.map(s=>`<tr onclick="navStock('${s.id}')"><td><div class="sn">${s.exchange.includes('🇸🇪')?'🇸🇪':'🇺🇸'} ${s.name}</div></td><td><div class="st">${s.ticker}</div></td><td style="font-size:10px;color:var(--muted2)">${s.exchange.replace(/🇸🇪|🇺🇸/g,'').trim()}</td><td>${s.price||'—'}</td></tr>`).join(''):`<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted)">Inga bolag ännu — tryck + i menyn</td></tr>`;
+  tb.innerHTML=stocks.length?stocks.map(s=>`<tr onclick="navStock('${s.id}')"><td><div class="sn">${(s.country==='SE'||(s.exchange||'').includes('🇸🇪')||(s.exchange||'').toUpperCase().includes('STO'))?'🇸🇪':'🇺🇸'} ${s.name}</div></td><td><div class="st">${s.ticker}</div></td><td style="font-size:10px;color:var(--muted2)">${s.exchange.replace(/🇸🇪|🇺🇸/g,'').trim()}</td><td>${s.price||'—'}</td></tr>`).join(''):`<tr><td colspan="4" style="text-align:center;padding:20px;color:var(--muted)">Inga bolag ännu — tryck + i menyn</td></tr>`;
   const c=document.getElementById('chartBars'),v=[55,60,57,65,70,68,75,72,80,77,85,82,88,84,92,88,95,91,98,94,100,97,104,101],mn=Math.min(...v),mx=Math.max(...v);
   c.innerHTML=v.map((x,i)=>`<div class="bar${i===v.length-1?' hi':''}" style="height:${((x-mn)/(mx-mn)*68+10).toFixed(1)}px"></div>`).join('');
 }
-function renderPgrid(){document.getElementById('pgrid').innerHTML=stocks.map(s=>`<div class="pgc" onclick="navStock('${s.id}')"><div class="pgc-top"><div><div class="pgc-name">${s.exchange.includes('🇸🇪')?'🇸🇪':'🇺🇸'} ${s.name}</div><div class="pgc-ticker">${s.ticker}</div></div><div class="pgc-price">${s.price||'—'}</div></div><div class="pgc-thesis">${s.thesis||'Ingen grundtes ännu...'}</div><div class="pgc-stats"><span class="pgc-stat">${(s.notes||[]).length} noter</span><span class="pgc-stat">${(s.news||[]).length} nyheter</span>${s.sell_thesis?'<span class="pgc-stat" style="color:var(--red)">Säljregler ✓</span>':''}</div></div>`).join('')+`<div class="pgc pgc-add" onclick="openModal()">+ Lägg till bolag</div>`;}
+function renderPgrid(){document.getElementById('pgrid').innerHTML=stocks.map(s=>`<div class="pgc" onclick="navStock('${s.id}')"><div class="pgc-top"><div><div class="pgc-name">${(s.country==='SE'||(s.exchange||'').includes('🇸🇪')||(s.exchange||'').toUpperCase().includes('STO'))?'🇸🇪':'🇺🇸'} ${s.name}</div><div class="pgc-ticker">${s.ticker}</div></div><div class="pgc-price">${s.price||'—'}</div></div><div class="pgc-thesis">${s.thesis||'Ingen grundtes ännu...'}</div><div class="pgc-stats"><span class="pgc-stat">${(s.notes||[]).length} noter</span><span class="pgc-stat">${(s.news||[]).length} nyheter</span>${s.sell_thesis?'<span class="pgc-stat" style="color:var(--red)">Säljregler ✓</span>':''}</div></div>`).join('')+`<div class="pgc pgc-add" onclick="openModal()">+ Lägg till bolag</div>`;}
 
 function renderStock(){
   const s=stocks.find(x=>x.id===activeId);if(!s)return;
-  const flag=s.exchange.includes('🇸🇪')?'🇸🇪':'🇺🇸';
+  const flag=s.country==='SE'||(s.exchange||'').includes('🇸🇪')||(s.exchange||'').toUpperCase().includes('STO')?'🇸🇪':'🇺🇸';
   document.getElementById('stockDetail').innerHTML=`
 <div class="hero" id="stockHero">
   <div class="hero-top">
@@ -1890,7 +1902,12 @@ function addStock(){
     thesis:'',revisions:[],risks:[],catalysts:[],notes:[],news:[],tags:[],checks:{},
     bull:'',bear:'',sell_thesis:'',sell_time:'',sell_size:'',sources:''
   };
-  stocks.push(s);saveStock(s).then(()=>{renderSidebar();});closeModal();selectedCompany=null;navStock(s.id);
+  stocks.push(s);
+  closeModal();
+  selectedCompany=null;
+  renderSidebar();      // Render immediately with new stock
+  navStock(s.id);       // Navigate to stock page
+  saveStock(s);         // Save to Supabase in background
 }
 document.getElementById('moverlay').addEventListener('click',e=>{if(e.target===document.getElementById('moverlay'))closeModal();});
 
@@ -1911,7 +1928,15 @@ function closeSidebar(){
   document.getElementById('hamburger').classList.remove('open');
 }
 
-function boot(){renderSidebar();renderDash();}
+function boot(){
+  // Activate dashboard by default
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-dash').classList.add('active');
+  document.querySelectorAll('.ni').forEach(n=>n.classList.remove('active'));
+  document.querySelector('.ni')?.classList.add('active');
+  renderSidebar();
+  renderDash();
+}
 load(); // Initializes Supabase auth listener
 </script>
 </body>
