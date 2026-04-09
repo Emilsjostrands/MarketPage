@@ -708,19 +708,7 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
       </div>
       <div id="search-results" style="margin-top:8px;max-height:260px;overflow-y:auto;border-radius:8px;border:1px solid var(--border);display:none;background:#fff;box-shadow:0 4px 12px rgba(30,58,95,0.1)"></div>
       <div id="search-hint" style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);margin-top:8px;text-align:center">
-        Söker i inbyggd lista · Lägg till Börsdata-nyckel för full täckning
-      </div>
-
-        <!-- BÖRSDATA KEY -->
-      <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em">Börsdata API-nyckel</div>
-          <div id="modal-key-status" style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted)">Ingen nyckel — söker med fallback</div>
-        </div>
-        <input id="m-bd-key" placeholder="Din Börsdata Pro API-nyckel..." type="password"
-          style="width:100%;background:#fff;border:1px solid var(--border);border-radius:6px;padding:7px 10px;color:var(--text);font-family:'DM Mono',monospace;font-size:11px;outline:none;transition:border-color 0.15s;"
-          oninput="saveBorsdataKey(this.value)">
-        <div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:4px">borsdata.se · Pro-version · Utökar sökning med hela Börsdata-databasen</div>
+        Söker bland 13 000+ bolag · Stockholmsbörsen, NASDAQ, NYSE m.fl.
       </div>
 
       <!-- MANUAL FALLBACK -->
@@ -1156,14 +1144,12 @@ function renderStock(){
         <span class="hmi">·</span>
         <span class="hmi">${s.exchange}</span>
         ${s.sector?`<span class="hmi">·</span><span class="hmi">${s.sector}</span>`:''}
-        ${s.bdConnected?`<span class="hbd-badge">✓ Börsdata</span>`:''}
+        ${s.isin?`<span class="hbd-badge">${s.isin}</span>`:''}
       </div>
       <div id="hero-desc">
         ${s.description
           ? `<div class="hdesc" style="margin-top:10px">${s.description}</div>`
-          : s.bdConnected
-            ? `<div class="hdesc" style="margin-top:10px;color:rgba(245,240,232,0.3);font-style:italic">Laddar bolagsbeskrivning...</div>`
-            : `<div class="hdesc" style="margin-top:10px;color:rgba(245,240,232,0.3);font-style:italic">Ingen beskrivning — koppla Börsdata för automatisk info</div>`
+          : `<div class="hdesc" style="margin-top:10px;color:rgba(245,240,232,0.3);font-style:italic">Ingen beskrivning — lägg till i anteckningarna</div>`
         }
         ${s.ceo ? `<div class="hceo">VD: <span class="hceo-name">${s.ceo}</span></div>` : ''}
       </div>
@@ -1351,35 +1337,6 @@ function renderStock(){
   <div style="margin-top:10px"><button class="btn bsm" onclick="saveSources()">Spara</button></div>
 </div>`;
   updateCheckScore();
-  // Auto-fetch description/CEO from Börsdata if connected and not yet loaded
-  if(s.bdConnected&&s.bdInsId&&borsdataKey&&(!s.description||!s.ceo)){
-    fetchBdDetails(s.id);
-  }
-}
-
-async function fetchBdDetails(stockId){
-  const s=stocks.find(x=>x.id===stockId);
-  if(!s||!borsdataKey||!s.bdInsId)return;
-  try{
-    const r=await fetch(`${BORSDATA_BASE}/instruments/${s.bdInsId}/description?authKey=${borsdataKey}`);
-    const d=await r.json();
-    let updated=false;
-    // Description
-    const desc=d.description||d.Description||d.text||d.Text||'';
-    if(desc&&!s.description){s.description=desc;updated=true;}
-    // CEO — Börsdata returns management info in company details
-    const ceo=d.ceo||d.Ceo||d.CEO||d.director||d.Director||'';
-    if(ceo&&!s.ceo){s.ceo=ceo;updated=true;}
-    if(updated){
-      save();
-      // Update just the hero desc without full re-render
-      const descEl=document.getElementById('hero-desc');
-      if(descEl&&s.description){
-        descEl.innerHTML=`<div class="hdesc" style="margin-top:10px">${s.description}</div>`
-          +(s.ceo?`<div class="hceo">VD: <span class="hceo-name">${s.ceo}</span></div>`:'');
-      }
-    }
-  }catch(e){}
 }
 
 // ══ RISKS ══
@@ -1541,21 +1498,7 @@ async function fetchClosePrice(){
   const btn=event.target;
   btn.textContent='Hämtar...';btn.disabled=true;
 
-  // Try Börsdata if connected
-  if(borsdataKey&&s.bdInsId){
-    try{
-      const r=await fetch(`${BORSDATA_BASE}/instruments/${s.bdInsId}/stockprices/last?authKey=${borsdataKey}`);
-      const d=await r.json();
-      const p=d.stockPricesList?.[0];
-      if(p){
-        s.closePrice=p.c?.toFixed(2)||p.o?.toFixed(2)||'';
-        s.closePriceDate=p.d||'';
-        save();renderStock();return;
-      }
-    }catch(e){}
-  }
-
-  // Manual fallback
+  // Manual input
   btn.textContent='⟳ Hämta kurs';btn.disabled=false;
   const v=prompt(`Ange gårdagens stängningskurs för ${s.name}:`,s.closePrice||s.price||'');
   if(v===null)return;
@@ -1610,133 +1553,9 @@ function genOnepager(){
   },1600);
 }
 
-// ══ BÖRSDATA API LAYER ══
-// Alla API-anrop går igenom dessa funktioner.
-// När du har din Börsdata API-nyckel, klistra in den i inställningarna.
-// Appen väljer automatiskt rätt endpoint baserat på om nyckeln finns.
-
-const BORSDATA_BASE = 'https://apiservice.borsdata.se/v1';
-let borsdataKey = '';
+// ══ BOLAGSSÖKNING VIA SUPABASE ══
 let selectedCompany = null;
 let searchTimer = null;
-
-// Börsdata instrument cache (laddas en gång)
-let bdInstruments = null;
-
-async function loadKeys(){
-  try{const r=localStorage.getItem('pv5-bdkey');if(r){borsdataKey=r;const el=document.getElementById('m-bd-key');if(el)el.value=borsdataKey;}}catch(e){}
-}
-async function saveBorsdataKey(k){
-  borsdataKey=k.trim();
-  try{localStorage.setItem('pv5-bdkey',borsdataKey);}catch(e){}
-  // Reload instruments cache when key changes
-  bdInstruments=null;
-  updateModalKeyStatus();
-}
-
-function updateModalKeyStatus(){
-  const el=document.getElementById('modal-key-status');
-  if(!el)return;
-  if(borsdataKey){
-    el.textContent='✓ Börsdata-nyckel aktiv';
-    el.style.color='var(--green)';
-  } else {
-    el.textContent='Ingen nyckel — söker med fallback';
-    el.style.color='var(--muted)';
-  }
-}
-
-// ── Börsdata: hämta alla instrument (cachat) ──
-async function bdGetInstruments(){
-  if(bdInstruments) return bdInstruments;
-  if(!borsdataKey) return null;
-  try{
-    const r=await fetch(`${BORSDATA_BASE}/instruments?authKey=${borsdataKey}`);
-    const d=await r.json();
-    bdInstruments=d.instruments||[];
-    return bdInstruments;
-  }catch(e){return null;}
-}
-
-// ── Börsdata: hämta detaljer för ett instrument ──
-async function bdGetDetails(insId){
-  if(!borsdataKey||!insId) return null;
-  try{
-    const r=await fetch(`${BORSDATA_BASE}/instruments/${insId}/description?authKey=${borsdataKey}`);
-    return await r.json();
-  }catch(e){return null;}
-}
-
-// ── Börsdata: hämta senaste kurs ──
-async function bdGetLastPrice(insId){
-  if(!borsdataKey||!insId) return null;
-  try{
-    const r=await fetch(`${BORSDATA_BASE}/instruments/${insId}/stockprices/last?authKey=${borsdataKey}`);
-    const d=await r.json();
-    return d.stockPricesList?.[0]||null;
-  }catch(e){return null;}
-}
-
-// ── Börsdata: sök bland instrument ──
-async function bdSearch(query){
-  const instruments=await bdGetInstruments();
-  if(!instruments) return null;
-  const q=query.toLowerCase();
-  return instruments
-    .filter(i=>(i.name||'').toLowerCase().includes(q)||(i.ticker||'').toLowerCase().includes(q))
-    .slice(0,12)
-    .map(i=>({
-      insId:i.insId,
-      name:i.name,
-      ticker:i.ticker,
-      exchange:i.exchange||i.market||'',
-      country:i.country||'',
-      currency:i.currency||'SEK',
-      sector:i.sector||'',
-      branch:i.branch||i.industry||'',
-      source:'borsdata'
-    }));
-}
-
-// ── Fallback: öppen sökning utan nyckel ──
-// Statisk lista med de mest sökta bolagen som fallback
-const FALLBACK_STOCKS = [
-  {name:'Apple Inc',ticker:'AAPL',exchange:'NASDAQ',country:'US',currency:'USD',sector:'Technology',branch:'Consumer Electronics',source:'fallback'},
-  {name:'Microsoft Corporation',ticker:'MSFT',exchange:'NASDAQ',country:'US',currency:'USD',sector:'Technology',branch:'Software',source:'fallback'},
-  {name:'Amazon.com Inc',ticker:'AMZN',exchange:'NASDAQ',country:'US',currency:'USD',sector:'Consumer Cyclical',branch:'Internet Retail',source:'fallback'},
-  {name:'NVIDIA Corporation',ticker:'NVDA',exchange:'NASDAQ',country:'US',currency:'USD',sector:'Technology',branch:'Semiconductors',source:'fallback'},
-  {name:'Alphabet Inc (Google)',ticker:'GOOGL',exchange:'NASDAQ',country:'US',currency:'USD',sector:'Technology',branch:'Internet',source:'fallback'},
-  {name:'Meta Platforms Inc',ticker:'META',exchange:'NASDAQ',country:'US',currency:'USD',sector:'Technology',branch:'Social Media',source:'fallback'},
-  {name:'Tesla Inc',ticker:'TSLA',exchange:'NASDAQ',country:'US',currency:'USD',sector:'Consumer Cyclical',branch:'Electric Vehicles',source:'fallback'},
-  {name:'Berkshire Hathaway',ticker:'BRK.B',exchange:'NYSE',country:'US',currency:'USD',sector:'Financial',branch:'Insurance',source:'fallback'},
-  {name:'JPMorgan Chase',ticker:'JPM',exchange:'NYSE',country:'US',currency:'USD',sector:'Financial',branch:'Banking',source:'fallback'},
-  {name:'Visa Inc',ticker:'V',exchange:'NYSE',country:'US',currency:'USD',sector:'Financial',branch:'Payments',source:'fallback'},
-  {name:'Investor AB',ticker:'INVE B',exchange:'STO',country:'SE',currency:'SEK',sector:'Financial',branch:'Investment Company',source:'fallback'},
-  {name:'Ericsson',ticker:'ERIC B',exchange:'STO',country:'SE',currency:'SEK',sector:'Technology',branch:'Telecom Equipment',source:'fallback'},
-  {name:'Volvo AB',ticker:'VOLV B',exchange:'STO',country:'SE',currency:'SEK',sector:'Industrials',branch:'Trucks',source:'fallback'},
-  {name:'Atlas Copco',ticker:'ATCO A',exchange:'STO',country:'SE',currency:'SEK',sector:'Industrials',branch:'Industrial Machinery',source:'fallback'},
-  {name:'Hexagon AB',ticker:'HEXA B',exchange:'STO',country:'SE',currency:'SEK',sector:'Technology',branch:'Measurement Tech',source:'fallback'},
-  {name:'Handelsbanken',ticker:'SHB A',exchange:'STO',country:'SE',currency:'SEK',sector:'Financial',branch:'Banking',source:'fallback'},
-  {name:'SEB AB',ticker:'SEB A',exchange:'STO',country:'SE',currency:'SEK',sector:'Financial',branch:'Banking',source:'fallback'},
-  {name:'Swedbank',ticker:'SWED A',exchange:'STO',country:'SE',currency:'SEK',sector:'Financial',branch:'Banking',source:'fallback'},
-  {name:'Nordea Bank',ticker:'NDA SE',exchange:'STO',country:'SE',currency:'SEK',sector:'Financial',branch:'Banking',source:'fallback'},
-  {name:'H&M',ticker:'HM B',exchange:'STO',country:'SE',currency:'SEK',sector:'Consumer',branch:'Retail',source:'fallback'},
-  {name:'Essity AB',ticker:'ESSITY B',exchange:'STO',country:'SE',currency:'SEK',sector:'Consumer',branch:'Hygiene',source:'fallback'},
-  {name:'Sandvik AB',ticker:'SAND',exchange:'STO',country:'SE',currency:'SEK',sector:'Industrials',branch:'Mining Equipment',source:'fallback'},
-  {name:'SKF AB',ticker:'SKF B',exchange:'STO',country:'SE',currency:'SEK',sector:'Industrials',branch:'Bearings',source:'fallback'},
-  {name:'AstraZeneca',ticker:'AZN',exchange:'LSE',country:'GB',currency:'GBP',sector:'Healthcare',branch:'Pharmaceuticals',source:'fallback'},
-  {name:'LVMH',ticker:'MC',exchange:'EPA',country:'FR',currency:'EUR',sector:'Consumer',branch:'Luxury Goods',source:'fallback'},
-  {name:'ASML Holding',ticker:'ASML',exchange:'NASDAQ',country:'NL',currency:'EUR',sector:'Technology',branch:'Semiconductor Equipment',source:'fallback'},
-];
-
-function fallbackSearch(query){
-  const q=query.toLowerCase();
-  return FALLBACK_STOCKS.filter(s=>
-    s.name.toLowerCase().includes(q)||
-    s.ticker.toLowerCase().includes(q)||
-    s.sector.toLowerCase().includes(q)
-  ).slice(0,8);
-}
 
 // ── SEARCH ORCHESTRATOR ──
 function searchCompany(query){
@@ -1752,23 +1571,17 @@ async function doSearch(q){
   const res=document.getElementById('search-results');
   const spinner=document.getElementById('search-spinner');
   try{
-    let results=[];
-    let sourceLabel='';
-    if(borsdataKey){
-      // Try Börsdata first
-      const bdResults=await bdSearch(q);
-      if(bdResults&&bdResults.length){
-        results=bdResults;
-        sourceLabel='Börsdata';
-      }
-    }
-    if(!results.length){
-      // Fallback to built-in list
-      results=fallbackSearch(q);
-      sourceLabel='Inbyggd lista';
-    }
+    // Search Supabase instruments table
+    // Search on name, ticker and isin simultaneously
+    const {data,error}=await supa
+      .from('instruments')
+      .select('name,ticker,currency,isin,sector,branch,country,country_code,instrument')
+      .or(`name.ilike.%${q}%,ticker.ilike.%${q}%,isin.ilike.%${q}%`)
+      .limit(12);
+
     spinner.style.display='none';
-    if(!results.length){
+
+    if(error||!data||!data.length){
       res.style.display='block';
       res.innerHTML=`<div style="padding:16px;text-align:center;font-size:12px;color:var(--muted)">
         Inga träffar för "<strong>${q}</strong>"<br>
@@ -1776,17 +1589,30 @@ async function doSearch(q){
       </div>`;
       return;
     }
+
     res.style.display='block';
-    res.innerHTML=`<div style="padding:7px 14px;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);background:var(--s2);border-bottom:1px solid var(--border)">KÄLLA: ${sourceLabel} · ${results.length} träffar</div>`+
-    results.map(c=>{
-      const flag=getFlag(c.exchange,c.country);
-      const safeC=encodeURIComponent(JSON.stringify(c));
+    res.innerHTML=`<div style="padding:7px 14px;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);background:var(--s2);border-bottom:1px solid var(--border)">${data.length} träffar · Börsdata-lista</div>`+
+    data.map(c=>{
+      const flag=getFlag('',c.country_code||c.country);
+      const safeC=encodeURIComponent(JSON.stringify({
+        name:c.name,
+        ticker:c.ticker,
+        currency:c.currency,
+        isin:c.isin,
+        sector:c.sector,
+        branch:c.branch,
+        country:c.country,
+        country_code:c.country_code,
+        source:'supabase'
+      }));
       return`<div class="search-result-item" onclick="selectCompany(decodeURIComponent('${safeC}'),true)">
         <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
           <div>
             <div style="font-weight:500;font-size:13px;color:var(--blue-dark)">${flag} ${c.name}</div>
             <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted2);margin-top:2px;display:flex;gap:8px">
-              <span>${c.ticker}</span><span>·</span><span>${c.exchange}</span>${c.sector?`<span>·</span><span>${c.sector}</span>`:''}
+              <span>${c.ticker||''}</span>
+              ${c.sector?`<span>·</span><span>${c.sector}</span>`:''}
+              ${c.branch?`<span>·</span><span>${c.branch}</span>`:''}
             </div>
           </div>
           <div style="font-family:'DM Mono',monospace;font-size:10px;color:var(--muted);text-align:right;flex-shrink:0">${c.currency||''}</div>
@@ -1796,17 +1622,36 @@ async function doSearch(q){
   }catch(e){
     spinner.style.display='none';
     res.style.display='block';
-    res.innerHTML=`<div style="padding:16px;text-align:center;font-size:12px;color:var(--red)">Sökningen misslyckades</div>`;
+    res.innerHTML=`<div style="padding:16px;text-align:center;font-size:12px;color:var(--red)">Sökningen misslyckades — ${e.message}</div>`;
   }
 }
 
 function getFlag(exchange,country){
-  if(country==='SE'||['STO','XSTO','NGM'].some(x=>(exchange||'').toUpperCase().includes(x)))return'🇸🇪';
-  if(country==='US'||['NASDAQ','NYSE','AMEX'].some(x=>(exchange||'').toUpperCase().includes(x)))return'🇺🇸';
-  if(country==='GB'||['LSE','XLON'].some(x=>(exchange||'').toUpperCase().includes(x)))return'🇬🇧';
-  if(country==='DE'||['XETRA','FRA'].some(x=>(exchange||'').toUpperCase().includes(x)))return'🇩🇪';
-  if(country==='FR'||['EPA'].some(x=>(exchange||'').toUpperCase().includes(x)))return'🇫🇷';
-  if(country==='NL'||['AEX'].some(x=>(exchange||'').toUpperCase().includes(x)))return'🇳🇱';
+  const c=(country||'').toUpperCase();
+  const e=(exchange||'').toUpperCase();
+  // Country code based (from Supabase instruments table)
+  if(c==='SE'||c==='SVERIGE')return'🇸🇪';
+  if(c==='US'||c==='USA')return'🇺🇸';
+  if(c==='DE'||c==='TYSKLAND')return'🇩🇪';
+  if(c==='GB'||c==='STORBRITANNIEN')return'🇬🇧';
+  if(c==='NO'||c==='NORGE')return'🇳🇴';
+  if(c==='FI'||c==='FINLAND')return'🇫🇮';
+  if(c==='DK'||c==='DANMARK')return'🇩🇰';
+  if(c==='FR'||c==='FRANKRIKE')return'🇫🇷';
+  if(c==='NL'||c==='NEDERLÄNDERNA')return'🇳🇱';
+  if(c==='CH'||c==='SCHWEIZ')return'🇨🇭';
+  if(c==='JP'||c==='JAPAN')return'🇯🇵';
+  if(c==='CA'||c==='KANADA')return'🇨🇦';
+  if(c==='AU'||c==='AUSTRALIEN')return'🇦🇺';
+  if(c==='CN'||c==='KINA')return'🇨🇳';
+  if(c==='KR'||c==='SYDKOREA')return'🇰🇷';
+  if(c==='ES'||c==='SPANIEN')return'🇪🇸';
+  if(c==='IT'||c==='ITALIEN')return'🇮🇹';
+  if(c==='BR'||c==='BRASILIEN')return'🇧🇷';
+  if(c==='IN'||c==='INDIEN')return'🇮🇳';
+  // Exchange based fallback
+  if(['STO','XSTO','NGM'].some(x=>e.includes(x)))return'🇸🇪';
+  if(['NASDAQ','NYSE','AMEX'].some(x=>e.includes(x)))return'🇺🇸';
   return'🌐';
 }
 
@@ -1869,7 +1714,6 @@ function openModal(){
   const inp=document.getElementById('m-search');if(inp)inp.value='';
   const price=document.getElementById('m-price');if(price)price.value='';
   const mf=document.getElementById('manual-add-form');if(mf)mf.style.display='none';
-  loadKeys();
   setTimeout(()=>document.getElementById('m-search')?.focus(),200);
 }
 function closeModal(){document.getElementById('moverlay').classList.remove('open');}
@@ -1896,8 +1740,8 @@ function addStock(){
     country:c.country||'',
     sector:c.sector||'',
     industry:c.branch||c.industry||'',
-    bdInsId:c.insId||null,          // Börsdata instrument ID
-    bdConnected:c.source==='borsdata',
+    isin:c.isin||'',
+    bdConnected:false,
     price:document.getElementById('m-price')?.value?.trim()||'',
     thesis:'',revisions:[],risks:[],catalysts:[],notes:[],news:[],tags:[],checks:{},
     bull:'',bear:'',sell_thesis:'',sell_time:'',sell_size:'',sources:''
