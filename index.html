@@ -71,6 +71,14 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 .sni.active{color:#f5f0e8;background:rgba(74,144,196,0.22);border-left-color:rgba(180,210,245,0.8);}
 .sni-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .sni-price{font-family:'DM Mono',monospace;font-size:10px;color:rgba(180,210,245,0.85);flex-shrink:0;}
+.sort-bar{padding:8px 14px;display:flex;gap:5px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,0.08);}
+.sort-btn{font-family:'DM Mono',monospace;font-size:9px;padding:3px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);color:rgba(245,240,232,0.45);cursor:pointer;transition:all 0.15s;background:transparent;white-space:nowrap;}
+.sort-btn:hover{color:rgba(245,240,232,0.8);border-color:rgba(255,255,255,0.25);}
+.sort-btn.active{color:#f5f0e8;background:rgba(74,144,196,0.25);border-color:rgba(180,210,245,0.4);}
+.sni-star{font-size:10px;flex-shrink:0;cursor:pointer;opacity:0.3;transition:opacity 0.15s;padding:0 2px;line-height:1;}
+.sni-star:hover{opacity:0.8;}
+.sni-star.on{opacity:1;}
+.sni-divider{font-family:'DM Mono',monospace;font-size:8px;color:rgba(245,240,232,0.2);padding:6px 20px 2px;letter-spacing:0.12em;text-transform:uppercase;}
 .addbtn{display:flex;align-items:center;gap:8px;padding:9px 18px 9px 26px;cursor:pointer;color:rgba(245,240,232,0.55);font-size:12px;transition:color 0.15s;}
 .addbtn:hover{color:#f5f0e8;}
 
@@ -635,6 +643,12 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
     <div class="ni" onclick="navPage('onepager',this)"><span style="font-size:12px">◎</span>Nyheter · Onepager</div>
     <div class="nsec">Portfölj</div>
     <div class="ni" onclick="navPage('portfolio',this)"><span style="font-size:12px">▦</span>Alla bolag</div>
+    <div class="sort-bar" id="sortBar">
+      <div class="sort-btn active" data-sort="custom" onclick="setSort('custom',this)">Standard</div>
+      <div class="sort-btn" data-sort="country" onclick="setSort('country',this)">Land</div>
+      <div class="sort-btn" data-sort="sector" onclick="setSort('sector',this)">Sektor</div>
+      <div class="sort-btn" data-sort="name" onclick="setSort('name',this)">A–Ö</div>
+    </div>
     <div id="stockNav"></div>
     <div class="addbtn" onclick="openModal()"><span style="font-size:15px">+</span> Lägg till bolag</div>
   </div>
@@ -1103,15 +1117,73 @@ function navStock(id,el){
   renderStock();
   closeSidebar();
 }
+let sidebarSort = localStorage.getItem('pv5-sort')||'custom';
+
+function setSort(mode, el){
+  sidebarSort = mode;
+  localStorage.setItem('pv5-sort', mode);
+  document.querySelectorAll('.sort-btn').forEach(b=>b.classList.remove('active'));
+  if(el) el.classList.add('active');
+  renderSidebar();
+}
+
+function toggleStar(stockId, e){
+  e.stopPropagation();
+  const s=stocks.find(x=>x.id===stockId);
+  if(!s)return;
+  s.starred=!s.starred;
+  save();
+  renderSidebar();
+}
+
+function getSortedStocks(){
+  const starred=stocks.filter(s=>s.starred);
+  const rest=stocks.filter(s=>!s.starred);
+  const sortFn=(a,b)=>{
+    if(sidebarSort==='name') return a.name.localeCompare(b.name,'sv');
+    if(sidebarSort==='country'){
+      const ca=a.country_code||a.country||'';
+      const cb=b.country_code||b.country||'';
+      return ca.localeCompare(cb)||a.name.localeCompare(b.name,'sv');
+    }
+    if(sidebarSort==='sector'){
+      const sa=a.sector||'';
+      const sb=b.sector||'';
+      return sa.localeCompare(sb,'sv')||a.name.localeCompare(b.name,'sv');
+    }
+    return 0; // custom — keep original order
+  };
+  return{starred:[...starred].sort(sortFn), rest:[...rest].sort(sortFn)};
+}
+
 function renderSidebar(){
-  document.getElementById('stockNav').innerHTML=stocks.map(s=>{
-    const flag=s.country==='SE'||(s.exchange||'').includes('🇸🇪')||(s.exchange||'').toUpperCase().includes('STO')?'🇸🇪':'🇺🇸';
+  // Restore active sort button
+  document.querySelectorAll('.sort-btn').forEach(b=>{
+    b.classList.toggle('active', b.dataset.sort===sidebarSort);
+  });
+
+  const {starred, rest}=getSortedStocks();
+  const nav=document.getElementById('stockNav');
+  if(!nav)return;
+
+  const renderItem=s=>{
+    const flag=getFlag('',s.country_code||s.country||'');
     return`<div class="sni${activeId===s.id?' active':''}" onclick="navStock('${s.id}',this)">
       <span style="font-size:11px">${flag}</span>
       <span class="sni-name">${s.name}</span>
       ${s.closePrice||s.price?`<span class="sni-price">${s.closePrice||s.price}</span>`:''}
+      <span class="sni-star${s.starred?' on':''}" onclick="toggleStar('${s.id}',event)" title="${s.starred?'Ta bort stjärna':'Stjärnmärk'}">★</span>
     </div>`;
-  }).join('');
+  };
+
+  let html='';
+  if(starred.length){
+    html+=`<div class="sni-divider">Favoriter</div>`;
+    html+=starred.map(renderItem).join('');
+    if(rest.length) html+=`<div class="sni-divider">Övriga</div>`;
+  }
+  html+=rest.map(renderItem).join('');
+  nav.innerHTML=html;
 }
 
 function renderDash(){
