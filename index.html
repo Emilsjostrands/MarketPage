@@ -996,7 +996,9 @@ async function load(){
   }
 
   // Listen for future login/logout events
+  console.log('load() started — registering auth listener');
   supa.auth.onAuthStateChange(async(event,session)=>{
+    console.log('onAuthStateChange:', event, session?.user?.email||'no user');
     if(event==='SIGNED_IN'&&session?.user){
       await handleSession(session.user);
     } else if(event==='SIGNED_OUT'){
@@ -1008,19 +1010,28 @@ async function load(){
 }
 
 async function handleSession(user){
+  console.log('handleSession start:', user.email);
   currentUser=user;
   const email=user.email||'';
-  // Update UI
-  document.getElementById('loginScreen').classList.add('hidden');
-  document.getElementById('userEmail').textContent=email;
-  document.getElementById('userAvatar').textContent=email.charAt(0).toUpperCase();
+  // Hide login screen
+  const ls=document.getElementById('loginScreen');
+  if(ls){ls.classList.add('hidden');console.log('loginScreen hidden');}
+  else{console.error('loginScreen element not found!');}
+  // Update user menu
+  const ue=document.getElementById('userEmail');
+  if(ue)ue.textContent=email;
+  const ua=document.getElementById('userAvatar');
+  if(ua)ua.textContent=email.charAt(0).toUpperCase();
   const mobAv=document.getElementById('mobUserAvatar');
   if(mobAv)mobAv.textContent=email.charAt(0).toUpperCase();
-  // Load data from Supabase
+  // Load data
+  console.log('Loading data from Supabase...');
   await loadData();
-  // Load API keys (stay local)
+  console.log('Data loaded, stocks:', stocks.length);
   try{const r=localStorage.getItem('pv5-apikey');if(r)apiKey=r;}catch(e){}
+  console.log('Calling boot()...');
   boot();
+  console.log('boot() complete');
 }
 
 function showLoginScreen(){
