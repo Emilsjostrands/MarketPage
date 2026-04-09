@@ -1003,33 +1003,31 @@ function showUserMenu(){
 
 // ── SUPABASE DATA ──
 async function load(){
-  // Always start with login screen hidden until we verify session
-  document.getElementById('loginScreen').classList.add('hidden');
+  // ALWAYS show login screen first — hide it only when we confirm a valid session
+  showLoginScreen();
 
-  // Step 1: Listen for future auth changes FIRST
-  supa.auth.onAuthStateChange(async(event,session)=>{
-    console.log('Auth event:', event, session?.user?.email||'no user');
-    if((event==='SIGNED_IN'||event==='INITIAL_SESSION')&&session?.user){
+  try{
+    // Check for existing session
+    const {data:{session}}=await supa.auth.getSession();
+    if(session?.user){
+      // Valid session — log in silently
       await handleSession(session.user);
-    } else if(event==='SIGNED_OUT'||(!session&&event==='INITIAL_SESSION')){
-      currentUser=null;
-      stocks=[];
+    }
+  }catch(e){
+    console.error('Session check failed:', e);
+    // Stay on login screen
+  }
+
+  // Listen for future login/logout events
+  supa.auth.onAuthStateChange(async(event,session)=>{
+    if(event==='SIGNED_IN'&&session?.user){
+      await handleSession(session.user);
+    } else if(event==='SIGNED_OUT'){
+      currentUser=null;stocks=[];activeId=null;
+      document.getElementById('stockNav').innerHTML='';
       showLoginScreen();
     }
   });
-
-  // Step 2: Check existing session
-  try{
-    const {data:{session},error}=await supa.auth.getSession();
-    if(error) console.error('Session check error:', error);
-    if(!session?.user){
-      showLoginScreen();
-    }
-    // If session exists, onAuthStateChange handles it
-  }catch(e){
-    console.error('load() error:', e);
-    showLoginScreen();
-  }
 }
 
 async function handleSession(user){
