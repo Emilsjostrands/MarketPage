@@ -664,10 +664,16 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
     <div id="stockNav"></div>
     <div class="addbtn" onclick="openModal()"><span style="font-size:15px">+</span> Lägg till bolag</div>
   </div>
-  <div class="user-menu" onclick="showUserMenu()">
+  <div class="user-menu">
     <div class="user-avatar" id="userAvatar">?</div>
-    <div class="user-email" id="userEmail">Laddar...</div>
-    <div class="user-logout" onclick="event.stopPropagation();doLogout()" title="Logga ut">↩</div>
+    <div style="flex:1;min-width:0">
+      <div class="user-email" id="userEmail">Laddar...</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.3);margin-top:1px">Inloggad</div>
+    </div>
+    <div class="user-logout" onclick="doLogout()" title="Logga ut" style="display:flex;align-items:center;gap:4px;padding:5px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);transition:all 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='transparent'">
+      <span style="font-size:11px">↩</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.5)">Logga ut</span>
+    </div>
   </div>
 </aside>
 
@@ -947,10 +953,27 @@ async function doLogin(){
   const email=document.getElementById('loginEmail').value.trim();
   const pw=document.getElementById('loginPassword').value;
   const errEl=document.getElementById('loginErr');
+  if(!email||!pw){errEl.textContent='Ange e-post och lösenord.';return;}
+  errEl.style.color='var(--muted2)';
   errEl.textContent='Loggar in...';
-  const {data,error}=await supa.auth.signInWithPassword({email,password:pw});
-  if(error){errEl.textContent=error.message;return;}
-  errEl.textContent='';
+  try{
+    const {data,error}=await supa.auth.signInWithPassword({email,password:pw});
+    if(error){
+      errEl.style.color='var(--red)';
+      if(error.message.includes('Invalid login')||error.message.includes('invalid_credentials')){
+        errEl.textContent='Fel e-post eller lösenord.';
+      } else if(error.message.includes('Email not confirmed')){
+        errEl.textContent='Bekräfta din e-post först — kolla inkorgen.';
+      } else {
+        errEl.textContent=error.message;
+      }
+      return;
+    }
+    errEl.textContent='';
+  }catch(e){
+    errEl.style.color='var(--red)';
+    errEl.textContent='Nätverksfel — kontrollera anslutningen.';
+  }
 }
 async function doRegister(){
   const email=document.getElementById('regEmail').value.trim();
@@ -963,11 +986,15 @@ async function doRegister(){
   msgEl.textContent='Konto skapat! Kontrollera din e-post för bekräftelse, logga sedan in.';
 }
 async function doLogout(){
-  await supa.auth.signOut();
+  try{await supa.auth.signOut();}catch(e){}
   currentUser=null;stocks=[];activeId=null;
   document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
   document.querySelectorAll('.ni,.sni').forEach(n=>n.classList.remove('active'));
   document.getElementById('stockNav').innerHTML='';
+  // Clear login form
+  document.getElementById('loginEmail').value='';
+  document.getElementById('loginPassword').value='';
+  document.getElementById('loginErr').textContent='';
   showLoginScreen();
 }
 function showUserMenu(){
@@ -976,27 +1003,33 @@ function showUserMenu(){
 
 // ── SUPABASE DATA ──
 async function load(){
-  // Step 1: Check if there's an existing session
-  const {data:{session}}=await supa.auth.getSession();
+  // Always start with login screen hidden until we verify session
+  document.getElementById('loginScreen').classList.add('hidden');
 
-  if(session?.user){
-    // Already logged in — load data silently
-    await handleSession(session.user);
-  } else {
-    // No session — show login screen
-    showLoginScreen();
-  }
-
-  // Step 2: Listen for future auth changes (login/logout)
+  // Step 1: Listen for future auth changes FIRST
   supa.auth.onAuthStateChange(async(event,session)=>{
-    if(event==='SIGNED_IN'&&session?.user){
+    console.log('Auth event:', event, session?.user?.email||'no user');
+    if((event==='SIGNED_IN'||event==='INITIAL_SESSION')&&session?.user){
       await handleSession(session.user);
-    } else if(event==='SIGNED_OUT'){
+    } else if(event==='SIGNED_OUT'||(!session&&event==='INITIAL_SESSION')){
       currentUser=null;
       stocks=[];
       showLoginScreen();
     }
   });
+
+  // Step 2: Check existing session
+  try{
+    const {data:{session},error}=await supa.auth.getSession();
+    if(error) console.error('Session check error:', error);
+    if(!session?.user){
+      showLoginScreen();
+    }
+    // If session exists, onAuthStateChange handles it
+  }catch(e){
+    console.error('load() error:', e);
+    showLoginScreen();
+  }
 }
 
 async function handleSession(user){
