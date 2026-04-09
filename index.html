@@ -611,11 +611,8 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
       <input class="login-input" id="loginPassword" type="password" placeholder="••••••••" autocomplete="current-password" onkeydown="if(event.key==='Enter')doLogin()">
       <div class="login-err" id="loginErr"></div>
       <button class="login-btn" onclick="doLogin()">Logga in</button>
-      <div class="login-switch" id="loginSwitchLink" style="display:none">
-        Inget konto? <a onclick="showRegister()">Skapa konto</a>
-      </div>
-      <div class="login-switch" id="loginInviteOnly" style="color:var(--muted)">
-        Kontakt för åtkomst: bjud in via Supabase
+      <div class="login-switch" style="color:var(--muted);font-size:11px;margin-top:12px">
+        Kontakta administratören för att få tillgång
       </div>
     </div>
 
@@ -911,32 +908,7 @@ let currentUser = null;
 
 // ── AUTH ──
 // ── SIGNUP DETECTION ──
-async function detectSignupStatus(){
-  try{
-    const {error}=await supa.auth.signUp({
-      email:'__probe__@__detect__.invalid',
-      password:'__probe__'
-    });
-    const disabled=error&&(
-      error.message?.toLowerCase().includes('disabled')||
-      error.message?.toLowerCase().includes('not allowed')||
-      error.status===422
-    );
-    const switchLink=document.getElementById('loginSwitchLink');
-    const inviteOnly=document.getElementById('loginInviteOnly');
-    if(!disabled){
-      if(switchLink)switchLink.style.display='block';
-      if(inviteOnly)inviteOnly.style.display='none';
-    } else {
-      if(switchLink)switchLink.style.display='none';
-      if(inviteOnly)inviteOnly.style.display='block';
-    }
-  }catch(e){
-    // Network error — default to invite-only (safer)
-    const inviteOnly=document.getElementById('loginInviteOnly');
-    if(inviteOnly)inviteOnly.style.display='block';
-  }
-}
+// Signup detection removed — managed via Supabase dashboard
 
 function showLogin(){
   document.getElementById('loginForm').style.display='block';
@@ -954,16 +926,19 @@ async function doLogin(){
   const pw=document.getElementById('loginPassword').value;
   const errEl=document.getElementById('loginErr');
   if(!email||!pw){errEl.textContent='Ange e-post och lösenord.';return;}
+  const btn=document.querySelector('.login-btn');
+  if(btn){btn.textContent='Loggar in...';btn.disabled=true;}
   errEl.style.color='var(--muted2)';
-  errEl.textContent='Loggar in...';
+  errEl.textContent='';
   try{
     const {data,error}=await supa.auth.signInWithPassword({email,password:pw});
+    if(btn){btn.textContent='Logga in';btn.disabled=false;}
     if(error){
       errEl.style.color='var(--red)';
       if(error.message.includes('Invalid login')||error.message.includes('invalid_credentials')){
         errEl.textContent='Fel e-post eller lösenord.';
       } else if(error.message.includes('Email not confirmed')){
-        errEl.textContent='Bekräfta din e-post först — kolla inkorgen.';
+        errEl.textContent='Bekräfta din e-post — kolla inkorgen.';
       } else {
         errEl.textContent=error.message;
       }
@@ -971,6 +946,7 @@ async function doLogin(){
     }
     errEl.textContent='';
   }catch(e){
+    if(btn){btn.textContent='Logga in';btn.disabled=false;}
     errEl.style.color='var(--red)';
     errEl.textContent='Nätverksfel — kontrollera anslutningen.';
   }
@@ -1007,15 +983,16 @@ async function load(){
   showLoginScreen();
 
   try{
-    // Check for existing session
-    const {data:{session}}=await supa.auth.getSession();
+    // Check for existing session — with 5s timeout
+    const sessionPromise=supa.auth.getSession();
+    const timeoutPromise=new Promise((_,rej)=>setTimeout(()=>rej(new Error('timeout')),5000));
+    const {data:{session}}=await Promise.race([sessionPromise,timeoutPromise]);
     if(session?.user){
-      // Valid session — log in silently
       await handleSession(session.user);
     }
   }catch(e){
-    console.error('Session check failed:', e);
-    // Stay on login screen
+    console.error('Session check failed:', e.message);
+    // Stay on login screen — user can log in manually
   }
 
   // Listen for future login/logout events
@@ -1048,7 +1025,6 @@ async function handleSession(user){
 
 function showLoginScreen(){
   document.getElementById('loginScreen').classList.remove('hidden');
-  detectSignupStatus();
 }
 
 async function loadData(){
