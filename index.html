@@ -155,6 +155,11 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 .hstat-val.neg{color:#f08080;}
 .hstat-sub{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.35);margin-top:3px;}
 .hdesc{font-size:11px;color:rgba(245,240,232,0.6);line-height:1.65;max-width:560px;}
+.hdesc-ta{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:7px;padding:10px 12px;color:rgba(245,240,232,0.85);font-family:'Sora',sans-serif;font-size:12px;line-height:1.75;resize:none;outline:none;margin-top:10px;transition:border-color 0.15s, background 0.15s;min-height:42px;overflow:hidden;height:auto;box-sizing:border-box;display:block;}
+.hdesc-ta:focus{border-color:rgba(180,210,245,0.4);background:rgba(255,255,255,0.09);}
+.hdesc-ta::placeholder{color:rgba(245,240,232,0.25);font-style:italic;}
+.hdesc-saved{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.3);margin-top:5px;text-align:right;transition:color 0.2s;}
+.hdesc-saved.ok{color:rgba(130,210,150,0.8);}
 .hceo{font-family:'DM Mono',monospace;font-size:10px;color:rgba(245,240,232,0.5);margin-top:5px;display:flex;align-items:center;gap:5px;}
 .hceo-name{color:rgba(245,240,232,0.75);}
 
@@ -1219,11 +1224,14 @@ function renderStock(){
         ${s.isin?`<span class="hbd-badge">${s.isin}</span>`:''}
       </div>
       <div id="hero-desc">
-        ${s.description
-          ? `<div class="hdesc" style="margin-top:10px">${s.description}</div>`
-          : `<div class="hdesc" style="margin-top:10px;color:rgba(245,240,232,0.3);font-style:italic">Ingen beskrivning — lägg till i anteckningarna</div>`
-        }
-        ${s.ceo ? `<div class="hceo">VD: <span class="hceo-name">${s.ceo}</span></div>` : ''}
+        <textarea
+          class="hdesc-ta"
+          id="hero-desc-ta"
+          placeholder="Beskriv bolaget — vad gör de, varför äger du det, vad är unikt med caset..."
+          oninput="heroDescInput(this)"
+          onchange="saveHeroDesc(this.value)"
+        >${s.description||''}</textarea>
+        <div class="hdesc-saved" id="hero-desc-saved"></div>
       </div>
     </div>
     <div style="text-align:right;flex-shrink:0">
@@ -1410,6 +1418,10 @@ function renderStock(){
   <div style="margin-top:10px"><button class="btn bsm" onclick="saveSources()">Spara</button></div>
 </div>`;
   updateCheckScore();
+  // Multiple attempts to ensure textarea resizes after DOM is painted
+  setTimeout(initHeroDesc,50);
+  setTimeout(initHeroDesc,200);
+  setTimeout(initHeroDesc,500);
 }
 
 // ══ RISKS ══
@@ -1581,6 +1593,40 @@ async function deleteStockCompletely(id){
   document.querySelectorAll('.ni').forEach((n,i)=>{if(i===2)n.classList.add('active');});
   renderSidebar();
   renderPgrid();
+}
+
+function heroDescInput(ta){
+  // Auto-resize robustly
+  ta.style.height='0px';
+  ta.style.height=ta.scrollHeight+'px';
+  // Show unsaved indicator
+  const hint=document.getElementById('hero-desc-saved');
+  if(hint){hint.textContent='Osparad...';hint.classList.remove('ok');}
+}
+
+let descSaveTimer=null;
+function saveHeroDesc(val){
+  const s=stocks.find(x=>x.id===activeId);if(!s)return;
+  s.description=val;
+  // Debounce save — wait 800ms after typing stops
+  clearTimeout(descSaveTimer);
+  descSaveTimer=setTimeout(async()=>{
+    await save();
+    const hint=document.getElementById('hero-desc-saved');
+    if(hint){hint.textContent='Sparad ✓';hint.classList.add('ok');
+      setTimeout(()=>{hint.textContent='';hint.classList.remove('ok');},2000);}
+  },800);
+}
+
+// Auto-resize textarea on render
+function initHeroDesc(){
+  const ta=document.getElementById('hero-desc-ta');
+  if(!ta)return;
+  // Force reflow then set height
+  ta.style.height='0px';
+  requestAnimationFrame(()=>{
+    ta.style.height=ta.scrollHeight+'px';
+  });
 }
 
 function editGav(){
