@@ -58,28 +58,28 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 .sidebar{width:var(--sw);background:linear-gradient(180deg,#1e3a5f 0%,#243f66 35%,#2a4a78 65%,#4a6e96 78%,#8aabcc 88%,#c8d8e8 94%,#e8ded0 100%);display:flex;flex-direction:column;overflow:hidden;flex-shrink:0;box-shadow:2px 0 16px rgba(30,58,95,0.2);}
 .slogo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,0.1);background:rgba(0,0,0,0.08);}
 .slogo-t{font-family:'Playfair Display',serif;font-size:18px;color:#f5f0e8;letter-spacing:0.01em;}
-.slogo-s{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.45);letter-spacing:0.15em;margin-top:3px;}
+.slogo-s{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.65);letter-spacing:0.15em;margin-top:3px;}
 .sbody{flex:1;overflow-y:auto;padding-bottom:20px;}
 .sbody::-webkit-scrollbar{width:3px;}
 .sbody::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.15);}
-.nsec{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.35);letter-spacing:0.18em;text-transform:uppercase;padding:16px 20px 5px;}
-.ni{display:flex;align-items:center;gap:9px;padding:9px 20px;cursor:pointer;color:rgba(245,240,232,0.6);font-size:13px;transition:all 0.15s;border-left:2px solid transparent;}
+.nsec{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.55);letter-spacing:0.18em;text-transform:uppercase;padding:16px 20px 5px;}
+.ni{display:flex;align-items:center;gap:9px;padding:9px 20px;cursor:pointer;color:rgba(245,240,232,0.82);font-size:13px;transition:all 0.15s;border-left:2px solid transparent;}
 .ni:hover{color:#f5f0e8;background:rgba(255,255,255,0.07);}
 .ni.active{color:#f5f0e8;background:rgba(74,144,196,0.22);border-left-color:rgba(180,210,245,0.8);}
-.sni{display:flex;align-items:center;gap:8px;padding:7px 18px 7px 26px;cursor:pointer;color:rgba(245,240,232,0.55);font-size:12px;transition:all 0.15s;border-left:2px solid transparent;}
+.sni{display:flex;align-items:center;gap:8px;padding:7px 18px 7px 26px;cursor:pointer;color:rgba(245,240,232,0.78);font-size:12px;transition:all 0.15s;border-left:2px solid transparent;}
 .sni:hover{color:#f5f0e8;background:rgba(255,255,255,0.07);}
 .sni.active{color:#f5f0e8;background:rgba(74,144,196,0.22);border-left-color:rgba(180,210,245,0.8);}
 .sni-name{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
 .sni-price{font-family:'DM Mono',monospace;font-size:10px;color:rgba(180,210,245,0.85);flex-shrink:0;}
 .sort-bar{padding:8px 14px;display:flex;gap:5px;flex-wrap:wrap;border-bottom:1px solid rgba(255,255,255,0.08);}
-.sort-btn{font-family:'DM Mono',monospace;font-size:9px;padding:3px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);color:rgba(245,240,232,0.45);cursor:pointer;transition:all 0.15s;background:transparent;white-space:nowrap;}
+.sort-btn{font-family:'DM Mono',monospace;font-size:9px;padding:3px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.12);color:rgba(245,240,232,0.7);cursor:pointer;transition:all 0.15s;background:transparent;white-space:nowrap;}
 .sort-btn:hover{color:rgba(245,240,232,0.8);border-color:rgba(255,255,255,0.25);}
 .sort-btn.active{color:#f5f0e8;background:rgba(74,144,196,0.25);border-color:rgba(180,210,245,0.4);}
 .sni-star{font-size:10px;flex-shrink:0;cursor:pointer;opacity:0.3;transition:opacity 0.15s;padding:0 2px;line-height:1;}
 .sni-star:hover{opacity:0.8;}
 .sni-star.on{opacity:1;}
-.sni-divider{font-family:'DM Mono',monospace;font-size:8px;color:rgba(245,240,232,0.2);padding:6px 20px 2px;letter-spacing:0.12em;text-transform:uppercase;}
-.addbtn{display:flex;align-items:center;gap:8px;padding:9px 18px 9px 26px;cursor:pointer;color:rgba(245,240,232,0.55);font-size:12px;transition:color 0.15s;}
+.sni-divider{font-family:'DM Mono',monospace;font-size:8px;color:rgba(245,240,232,0.5);padding:6px 20px 2px;letter-spacing:0.12em;text-transform:uppercase;}
+.addbtn{display:flex;align-items:center;gap:8px;padding:9px 18px 9px 26px;cursor:pointer;color:rgba(245,240,232,0.78);font-size:12px;transition:color 0.15s;}
 .addbtn:hover{color:#f5f0e8;}
 
 /* MAIN */
@@ -144,21 +144,21 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 .hflag{font-size:22px;margin-bottom:4px;display:block;}
 .hname{font-family:'Playfair Display',serif;font-size:24px;font-weight:400;line-height:1.1;color:#f5f0e8;}
 .hmeta{display:flex;gap:12px;margin-top:5px;flex-wrap:wrap;align-items:center;}
-.hmi{font-family:'DM Mono',monospace;font-size:10px;color:rgba(245,240,232,0.55);}
+.hmi{font-family:'DM Mono',monospace;font-size:10px;color:rgba(245,240,232,0.78);}
 .hbd-badge{font-family:'DM Mono',monospace;font-size:9px;padding:2px 7px;border-radius:10px;background:rgba(42,122,75,0.3);border:1px solid rgba(42,122,75,0.5);color:rgba(180,240,200,0.9);}
 .hprice{font-family:'DM Mono',monospace;font-size:26px;font-weight:500;letter-spacing:-0.03em;color:#f5f0e8;text-align:right;}
-.hprice-label{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.4);text-align:right;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.1em;}
+.hprice-label{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.7);text-align:right;margin-bottom:3px;text-transform:uppercase;letter-spacing:0.1em;}
 .hstat{background:rgba(255,255,255,0.06);border-radius:8px;padding:10px 12px;border:1px solid rgba(255,255,255,0.08);}
-.hstat-label{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.4);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:5px;}
+.hstat-label{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.72);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:5px;}
 .hstat-val{font-family:'DM Mono',monospace;font-size:16px;font-weight:500;color:#f5f0e8;letter-spacing:-0.01em;}
 .hstat-val.pos{color:#7dd4a0;}
 .hstat-val.neg{color:#f08080;}
-.hstat-sub{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.35);margin-top:3px;}
+.hstat-sub{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.62);margin-top:3px;}
 .hdesc{font-size:11px;color:rgba(245,240,232,0.6);line-height:1.65;max-width:560px;}
 .hdesc-ta{width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);border-radius:7px;padding:10px 12px;color:rgba(245,240,232,0.85);font-family:'Sora',sans-serif;font-size:12px;line-height:1.75;resize:none;outline:none;margin-top:10px;transition:border-color 0.15s, background 0.15s;min-height:42px;overflow:hidden;height:auto;box-sizing:border-box;display:block;}
 .hdesc-ta:focus{border-color:rgba(180,210,245,0.4);background:rgba(255,255,255,0.09);}
 .hdesc-ta::placeholder{color:rgba(245,240,232,0.25);font-style:italic;}
-.hdesc-saved{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.3);margin-top:5px;text-align:right;transition:color 0.2s;}
+.hdesc-saved{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.6);margin-top:5px;text-align:right;transition:color 0.2s;}
 .hdesc-saved.ok{color:rgba(130,210,150,0.8);}
 .price-modal-overlay{position:fixed;inset:0;background:rgba(30,58,95,0.55);display:flex;align-items:center;justify-content:center;z-index:300;backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity 0.2s;}
 .price-modal-overlay.open{opacity:1;pointer-events:all;}
@@ -167,8 +167,8 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 .price-modal label{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;display:block;margin-bottom:5px;margin-top:12px;}
 .price-modal input{width:100%;background:#fff;border:1px solid var(--border2);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'Sora',sans-serif;font-size:13px;outline:none;transition:border-color 0.15s;box-sizing:border-box;}
 .price-modal input:focus{border-color:var(--blue-mid);}
-.hceo{font-family:'DM Mono',monospace;font-size:10px;color:rgba(245,240,232,0.5);margin-top:5px;display:flex;align-items:center;gap:5px;}
-.hceo-name{color:rgba(245,240,232,0.75);}
+.hceo{font-family:'DM Mono',monospace;font-size:10px;color:rgba(245,240,232,0.72);margin-top:5px;display:flex;align-items:center;gap:5px;}
+.hceo-name{color:rgba(245,240,232,0.92);}
 
 /* TAGS */
 .tags{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px;margin-top:10px;align-items:center;}
@@ -480,12 +480,11 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 .login-divider{height:1px;background:var(--border);margin:20px 0;}
 
 /* User menu in sidebar */
-.user-menu{padding:12px 16px;border-top:1px solid rgba(255,255,255,0.1);margin-top:auto;display:flex;align-items:center;gap:10px;cursor:pointer;transition:background 0.15s;}
-.user-menu:hover{background:rgba(255,255,255,0.07);}
-.user-avatar{width:28px;height:28px;border-radius:50%;background:rgba(74,144,196,0.4);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#f5f0e8;flex-shrink:0;}
-.user-email{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.6);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
-.user-logout{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.35);cursor:pointer;transition:color 0.15s;flex-shrink:0;}
-.user-logout:hover{color:rgba(245,240,232,0.8);}
+.user-menu{padding:12px 16px;border-top:1px solid rgba(255,255,255,0.12);margin-top:auto;display:flex;align-items:center;gap:10px;background:#1e3a5f;flex-shrink:0;}
+.user-avatar{width:30px;height:30px;border-radius:50%;background:rgba(74,144,196,0.5);border:1px solid rgba(74,144,196,0.4);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#f5f0e8;flex-shrink:0;}
+.user-email{font-family:'DM Mono',monospace;font-size:10px;color:#f5f0e8;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1;}
+.user-logout{font-family:'DM Mono',monospace;font-size:9px;cursor:pointer;transition:all 0.15s;flex-shrink:0;}
+.user-logout:hover{opacity:0.85;}
 
 /* Migration banner */
 .migrate-banner{background:rgba(45,106,159,0.1);border:1px solid rgba(45,106,159,0.3);border-radius:8px;padding:12px 14px;margin:12px 0;font-size:12px;color:var(--blue-mid);line-height:1.6;}
@@ -665,11 +664,11 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
     <div class="user-avatar" id="userAvatar">?</div>
     <div style="flex:1;min-width:0">
       <div class="user-email" id="userEmail">Laddar...</div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.3);margin-top:1px">Inloggad</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.7);margin-top:1px">Inloggad</div>
     </div>
-    <div class="user-logout" onclick="doLogout()" title="Logga ut" style="display:flex;align-items:center;gap:4px;padding:5px 8px;border-radius:6px;border:1px solid rgba(255,255,255,0.1);transition:all 0.15s;" onmouseover="this.style.background='rgba(255,255,255,0.08)'" onmouseout="this.style.background='transparent'">
-      <span style="font-size:11px">↩</span>
-      <span style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.5)">Logga ut</span>
+    <div class="user-logout" onclick="doLogout()" title="Logga ut" style="display:flex;align-items:center;gap:5px;padding:6px 10px;border-radius:6px;background:var(--blue-mid);border:none;">
+      <span style="font-size:11px;color:#fff">↩</span>
+      <span style="font-family:'DM Mono',monospace;font-size:9px;color:#fff;font-weight:500">Logga ut</span>
     </div>
   </div>
 </aside>
@@ -1262,10 +1261,10 @@ function renderStock(){
     <div style="text-align:right;flex-shrink:0">
       <div class="hprice-label">Stängningskurs</div>
       <div class="hprice" id="hero-close-price">${s.closePrice||s.price||'—'}</div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.3);margin-top:3px" id="hero-price-date">${s.closePriceDate?'Stängde '+s.closePriceDate:s.closePrice?'':'Ange kurs manuellt'}</div>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.65);margin-top:3px" id="hero-price-date">${s.closePriceDate?'Stängde '+s.closePriceDate:s.closePrice?'':'Ange kurs manuellt'}</div>
       <div style="margin-top:10px;display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">
-        <button class="bg bsm" style="color:rgba(245,240,232,0.6);border-color:rgba(245,240,232,0.15);font-size:10px" onclick="fetchClosePrice()">⟳ Uppdatera kurs</button>
-        <button class="bg bsm" style="color:rgba(245,240,232,0.6);border-color:rgba(245,240,232,0.15);font-size:10px" onclick="editGav()">GAV ✎</button>
+        <button class="bg bsm" style="color:rgba(245,240,232,0.85);border-color:rgba(245,240,232,0.3);font-size:10px" onclick="fetchClosePrice()">⟳ Uppdatera kurs</button>
+        <button class="bg bsm" style="color:rgba(245,240,232,0.85);border-color:rgba(245,240,232,0.3);font-size:10px" onclick="editGav()">GAV ✎</button>
         <button class="bg bsm" style="color:rgba(240,128,128,0.8);border-color:rgba(240,128,128,0.25);font-size:10px" onclick="confirmDeleteStock()">🗑 Ta bort</button>
       </div>
     </div>
@@ -1286,7 +1285,7 @@ function renderStock(){
           const sign=pct>=0?'+':'';
           return `<div class="hstat-val ${pct>=0?'pos':'neg'}" id="hero-dev">${sign}${pct.toFixed(1)}%</div><div class="hstat-sub">${pct>=0?'Vinst':'Förlust'} sedan köp</div>`;
         }
-        return `<div class="hstat-val" id="hero-dev" style="color:rgba(245,240,232,0.25)">—</div><div class="hstat-sub">Ange GAV och kurs</div>`;
+        return `<div class="hstat-val" id="hero-dev" style="color:rgba(245,240,232,0.55)">—</div><div class="hstat-sub">Ange GAV och kurs</div>`;
       })()}
     </div>
     <div class="hstat">
