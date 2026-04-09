@@ -160,6 +160,13 @@ body{background:var(--bg);color:var(--text);font-family:'Sora',sans-serif;font-s
 .hdesc-ta::placeholder{color:rgba(245,240,232,0.25);font-style:italic;}
 .hdesc-saved{font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.3);margin-top:5px;text-align:right;transition:color 0.2s;}
 .hdesc-saved.ok{color:rgba(130,210,150,0.8);}
+.price-modal-overlay{position:fixed;inset:0;background:rgba(30,58,95,0.55);display:flex;align-items:center;justify-content:center;z-index:300;backdrop-filter:blur(4px);opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.price-modal-overlay.open{opacity:1;pointer-events:all;}
+.price-modal{background:var(--bg);border:1px solid var(--border2);border-radius:14px;padding:24px;width:340px;box-shadow:0 8px 32px rgba(30,58,95,0.15);}
+.price-modal-title{font-family:'Playfair Display',serif;font-size:17px;font-weight:400;color:var(--blue-dark);margin-bottom:16px;}
+.price-modal label{font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);text-transform:uppercase;letter-spacing:0.12em;display:block;margin-bottom:5px;margin-top:12px;}
+.price-modal input{width:100%;background:#fff;border:1px solid var(--border2);border-radius:7px;padding:9px 12px;color:var(--text);font-family:'Sora',sans-serif;font-size:13px;outline:none;transition:border-color 0.15s;box-sizing:border-box;}
+.price-modal input:focus{border-color:var(--blue-mid);}
 .hceo{font-family:'DM Mono',monospace;font-size:10px;color:rgba(245,240,232,0.5);margin-top:5px;display:flex;align-items:center;gap:5px;}
 .hceo-name{color:rgba(245,240,232,0.75);}
 
@@ -1640,17 +1647,45 @@ function editGav(){
 
 function fetchClosePrice(){
   const s=stocks.find(x=>x.id===activeId);if(!s)return;
-  const v=prompt(`Ange gårdagens stängningskurs för ${s.name}:`,s.closePrice||s.price||'');
-  if(v===null)return;
-  s.closePrice=v.trim();
-  s.closePriceDate=(()=>{
+  // Pre-fill with existing values
+  document.getElementById('priceModalTitle').textContent=`Uppdatera kurs — ${s.name}`;
+  document.getElementById('priceModalVal').value=s.closePrice||s.price||'';
+  // Default date: last weekday
+  const lastWeekday=(()=>{
     const d=new Date();d.setDate(d.getDate()-1);
     if(d.getDay()===0)d.setDate(d.getDate()-2);
     if(d.getDay()===6)d.setDate(d.getDate()-1);
-    return d.toLocaleDateString('sv-SE');
+    return d.toISOString().split('T')[0];
   })();
-  save();renderSidebar();renderStock();
+  // Use existing date if available, otherwise default
+  const existingDate=s.closePriceDate
+    ? (() => {
+        // Convert sv-SE date (e.g. "2025-04-08") to input format
+        try{ return new Date(s.closePriceDate).toISOString().split('T')[0]; }
+        catch(e){ return lastWeekday; }
+      })()
+    : lastWeekday;
+  document.getElementById('priceModalDate').value=existingDate;
+  document.getElementById('priceModalOverlay').classList.add('open');
+  setTimeout(()=>document.getElementById('priceModalVal').focus(),150);
 }
+
+function closePriceModal(){
+  document.getElementById('priceModalOverlay').classList.remove('open');
+}
+
+function savePriceModal(){
+  const s=stocks.find(x=>x.id===activeId);if(!s)return;
+  const val=document.getElementById('priceModalVal').value.trim();
+  const date=document.getElementById('priceModalDate').value;
+  if(!val)return;
+  s.closePrice=val;
+  s.closePriceDate=date
+    ? new Date(date).toLocaleDateString('sv-SE',{day:'numeric',month:'short',year:'numeric'})
+    : '';
+  save();closePriceModal();renderSidebar();renderStock();
+}
+
 function editPrice(){fetchClosePrice();}
 
 function connectApi(){const k=document.getElementById('apiKeyInput')?.value?.trim();if(!k)return;saveApiKey(k);renderStock();}
@@ -1891,7 +1926,12 @@ function addStock(){
 }
 document.getElementById('moverlay').addEventListener('click',e=>{if(e.target===document.getElementById('moverlay'))closeModal();});
 
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModal();});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'){closeModal();closePriceModal();}
+});
+document.getElementById('priceModalOverlay').addEventListener('click',e=>{
+  if(e.target===document.getElementById('priceModalOverlay'))closePriceModal();
+});
 
 // ══ MOBILE SIDEBAR ══
 function toggleSidebar(){
@@ -1919,5 +1959,21 @@ function boot(){
 }
 load(); // Initializes Supabase auth listener
 </script>
+
+<!-- PRICE MODAL -->
+<div class="price-modal-overlay" id="priceModalOverlay">
+  <div class="price-modal">
+    <div class="price-modal-title" id="priceModalTitle">Uppdatera kurs</div>
+    <label>Kurs</label>
+    <input id="priceModalVal" type="number" step="0.01" placeholder="t.ex. 212.60" onkeydown="if(event.key==='Enter')savePriceModal()">
+    <label>Datum</label>
+    <input id="priceModalDate" type="date">
+    <div style="display:flex;gap:8px;margin-top:18px;">
+      <button class="bg" style="flex:1;justify-content:center" onclick="closePriceModal()">Avbryt</button>
+      <button class="btn" style="flex:1;justify-content:center" onclick="savePriceModal()">Spara</button>
+    </div>
+  </div>
+</div>
+
 </body>
 </html>
