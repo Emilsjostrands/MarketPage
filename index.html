@@ -1947,8 +1947,8 @@ document.getElementById('moverlay').addEventListener('click',e=>{if(e.target===d
 document.addEventListener('keydown',e=>{
   if(e.key==='Escape'){closeModal();closePriceModal();}
 });
-document.getElementById('priceModalOverlay').addEventListener('click',e=>{
-  if(e.target===document.getElementById('priceModalOverlay'))closePriceModal();
+document.addEventListener('click',e=>{
+  if(e.target&&e.target.id==='priceModalOverlay')closePriceModal();
 });
 
 // ══ MOBILE SIDEBAR ══
