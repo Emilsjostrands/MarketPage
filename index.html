@@ -1157,10 +1157,11 @@ function renderStock(){
     <div style="text-align:right;flex-shrink:0">
       <div class="hprice-label">Stängningskurs</div>
       <div class="hprice" id="hero-close-price">${s.closePrice||s.price||'—'}</div>
-      <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.3);margin-top:3px" id="hero-price-date">${s.closePriceDate?'Stängde '+s.closePriceDate:s.closePrice?'':'Uppdateras via Börsdata'}</div>
-      <div style="margin-top:10px;display:flex;gap:6px;justify-content:flex-end">
-        <button class="bg bsm" style="color:rgba(245,240,232,0.6);border-color:rgba(245,240,232,0.15);font-size:10px" onclick="fetchClosePrice()">⟳ Hämta kurs</button>
+      <div style="font-family:'DM Mono',monospace;font-size:9px;color:rgba(245,240,232,0.3);margin-top:3px" id="hero-price-date">${s.closePriceDate?'Stängde '+s.closePriceDate:s.closePrice?'':'Ange kurs manuellt'}</div>
+      <div style="margin-top:10px;display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">
+        <button class="bg bsm" style="color:rgba(245,240,232,0.6);border-color:rgba(245,240,232,0.15);font-size:10px" onclick="fetchClosePrice()">⟳ Uppdatera kurs</button>
         <button class="bg bsm" style="color:rgba(245,240,232,0.6);border-color:rgba(245,240,232,0.15);font-size:10px" onclick="editGav()">GAV ✎</button>
+        <button class="bg bsm" style="color:rgba(240,128,128,0.8);border-color:rgba(240,128,128,0.25);font-size:10px" onclick="confirmDeleteStock()">🗑 Ta bort</button>
       </div>
     </div>
   </div>
@@ -1484,6 +1485,32 @@ function resetChecklist(){const s=stocks.find(x=>x.id===activeId);if(!s)return;s
 function saveSell(key){const s=stocks.find(x=>x.id===activeId);if(!s)return;s['sell_'+key]=document.getElementById('sell-'+key).value;save();const h=document.getElementById('sell-'+key+'-hint');if(h){h.textContent='Sparad ✓';h.classList.add('ok');setTimeout(()=>{h.textContent='Osparad';h.classList.remove('ok');},2000);}}
 function saveBB(k){const s=stocks.find(x=>x.id===activeId);if(!s)return;s[k]=document.getElementById(k+'-ta').value;save();const btn=event.target;btn.textContent='Sparad ✓';setTimeout(()=>{btn.textContent='Spara';},1500);}
 function saveSources(){const s=stocks.find(x=>x.id===activeId);if(!s)return;s.sources=document.getElementById('sources-ta').value;save();const btn=event.target;btn.textContent='Sparad ✓';setTimeout(()=>{btn.textContent='Spara';},1500);}
+function confirmDeleteStock(){
+  const s=stocks.find(x=>x.id===activeId);if(!s)return;
+  const confirmed=confirm(`Ta bort ${s.name} från din portfölj?\n\nAlla anteckningar, analyser och nyheter för detta bolag raderas permanent.`);
+  if(!confirmed)return;
+  deleteStockCompletely(s.id);
+}
+
+async function deleteStockCompletely(id){
+  const s=stocks.find(x=>x.id===id);if(!s)return;
+  // Delete from Supabase
+  if(s._rowId){
+    await supa.from('portfolj_stocks').delete().eq('id',s._rowId);
+  }
+  // Remove from local array
+  stocks=stocks.filter(x=>x.id!==id);
+  activeId=null;
+  save();
+  // Navigate back to portfolio page
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.getElementById('page-portfolio').classList.add('active');
+  document.querySelectorAll('.ni,.sni').forEach(n=>n.classList.remove('active'));
+  document.querySelectorAll('.ni').forEach((n,i)=>{if(i===2)n.classList.add('active');});
+  renderSidebar();
+  renderPgrid();
+}
+
 function editGav(){
   const s=stocks.find(x=>x.id===activeId);if(!s)return;
   const v=prompt(`GAV (anskaffningsvärde) för ${s.name}:\nAnge din genomsnittliga anskaffningskurs:`,s.gav||'');
@@ -1493,27 +1520,19 @@ function editGav(){
   renderStock();
 }
 
-async function fetchClosePrice(){
+function fetchClosePrice(){
   const s=stocks.find(x=>x.id===activeId);if(!s)return;
-  const btn=event.target;
-  btn.textContent='Hämtar...';btn.disabled=true;
-
-  // Manual input
-  btn.textContent='⟳ Hämta kurs';btn.disabled=false;
   const v=prompt(`Ange gårdagens stängningskurs för ${s.name}:`,s.closePrice||s.price||'');
   if(v===null)return;
   s.closePrice=v.trim();
-  s.closePriceDate=(() => {
+  s.closePriceDate=(()=>{
     const d=new Date();d.setDate(d.getDate()-1);
-    // Skip to friday if weekend
     if(d.getDay()===0)d.setDate(d.getDate()-2);
     if(d.getDay()===6)d.setDate(d.getDate()-1);
     return d.toLocaleDateString('sv-SE');
   })();
   save();renderSidebar();renderStock();
 }
-
-// Legacy compat
 function editPrice(){fetchClosePrice();}
 
 function connectApi(){const k=document.getElementById('apiKeyInput')?.value?.trim();if(!k)return;saveApiKey(k);renderStock();}
@@ -1591,7 +1610,7 @@ async function doSearch(q){
     }
 
     res.style.display='block';
-    res.innerHTML=`<div style="padding:7px 14px;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);background:var(--s2);border-bottom:1px solid var(--border)">${data.length} träffar · Börsdata-lista</div>`+
+    res.innerHTML=`<div style="padding:7px 14px;font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);background:var(--s2);border-bottom:1px solid var(--border)">${data.length} träffar</div>`+
     data.map(c=>{
       const flag=getFlag('',c.country_code||c.country);
       const safeC=encodeURIComponent(JSON.stringify({
@@ -1671,8 +1690,7 @@ function selectCompany(raw, encoded){
           ${c.currency?`<span>·</span><span>${c.currency}</span>`:''}
           ${c.sector?`<span>·</span><span style="color:var(--blue-mid)">${c.sector}</span>`:''}
         </div>
-        ${c.source==='borsdata'?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--green);margin-top:6px">✓ Kopplad till Börsdata (ID: ${c.insId})</div>`:
-          c.source==='fallback'?`<div style="font-family:'DM Mono',monospace;font-size:9px;color:var(--muted);margin-top:6px">Grunddata · Lägg till Börsdata-nyckel för fullständig koppling</div>`:''}
+
       </div>
       <div style="font-size:26px">${flag}</div>
     </div>`;
