@@ -1730,16 +1730,75 @@ async function sendChat(){
   msgs.scrollTop=msgs.scrollHeight;
 }
 
-function genOnepager(){
-  if(!stocks.length){document.getElementById('opContent').innerHTML=`<div class="news-empty"><div style="font-size:28px;margin-bottom:8px">◎</div><div style="font-family:'DM Mono',monospace;font-size:15px;color:var(--muted)">Lägg till bolag först</div></div>`;return;}
-  document.getElementById('opBadge').textContent='Genererar...';
-  document.getElementById('opContent').innerHTML=`<div style="text-align:center;padding:60px;color:var(--muted)"><div style="font-size:24px;display:inline-block;animation:spin 1s linear infinite">◌</div><br><br>Analyserar ${stocks.length} bolag...</div>`;
-  setTimeout(()=>{
-    const now=new Date();
-    document.getElementById('opBadge').textContent=`Genererad ${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')} · ${stocks.length} bolag bevakade`;
-    const items=[{t:'Fed håller räntan — splittrad syn på sänkningstakt 2026',b:'Mer restriktiv ton dämpar riskaptit och påverkar värdering av tillväxtbolag globalt.',i:'h',tags:['Makro','Fed','Ränta']},{t:'Stark AI-infrastrukturefterfrågan driver halvledarsektorn',b:'Hyperscalers ökar datacenterinvesteringar. Positivt för bolag med AI-exponering.',i:'l',tags:['AI','Tech']},{t:'Riksbanken öppnar för räntesänkning Q2',b:'Vice riksbankschefen signalerar att inflationsdatan möjliggör en sänkning under våren.',i:'m',tags:['Riksbanken','Sverige']}];
-    document.getElementById('opContent').innerHTML=items.map(n=>`<div class="nwcard"><div class="nwc-top"><div class="nwc-title">${n.t}</div><div class="nbadge ${n.i==='h'?'nbh':n.i==='m'?'nbm':'nbl'}">${n.i==='h'?'HÖG PÅVERKAN':n.i==='m'?'MEDEL':'POSITIV SIGNAL'}</div></div><div class="nwc-body">${n.b}</div><div class="nwc-foot"><div class="nwc-tags">${n.tags.map(t=>`<span class="nwtag">${t}</span>`).join('')}${stocks.slice(0,2).map(s=>`<span class="nwtag">${s.ticker}</span>`).join('')}</div><span class="nwc-meta">${now.toLocaleDateString('sv-SE')}</span></div></div>`).join('');
-  },1600);
+async function genOnepager(){
+  if(!stocks.length){
+    document.getElementById('opContent').innerHTML=`<div class="news-empty"><div style="font-size:28px;margin-bottom:8px">◎</div><div style="font-family:'DM Mono',monospace;font-size:15px;color:var(--muted)">Lägg till bolag först</div></div>`;
+    return;
+  }
+  document.getElementById('opBadge').textContent='Hämtar nyheter...';
+  document.getElementById('opContent').innerHTML=`<div style="text-align:center;padding:60px;color:var(--muted)"><div style="font-size:24px;display:inline-block;animation:spin 1s linear infinite">◌</div><br><br>Hämtar nyheter för ${stocks.length} bolag...</div>`;
+
+  const allNews=[];
+  const now=new Date();
+
+  // Fetch news for each stock in parallel
+  await Promise.all(stocks.map(async s=>{
+    try{
+      // Build search query: company name + ticker
+      const q=`${s.name} ${s.ticker}`.trim();
+      const resp=await fetch(`/api/news?q=${encodeURIComponent(q)}`);
+      if(!resp.ok)return;
+      const data=await resp.json();
+      (data.items||[]).forEach(item=>{
+        allNews.push({...item, stockName:s.name, ticker:s.ticker, country:s.country_code||s.country||''});
+      });
+    }catch(e){
+      console.warn('News fetch failed for', s.name, e.message);
+    }
+  }));
+
+  if(!allNews.length){
+    document.getElementById('opBadge').textContent='Inga nyheter hittades';
+    document.getElementById('opContent').innerHTML=`<div class="news-empty"><div style="font-size:28px;margin-bottom:8px">📰</div><div style="font-size:15px;color:var(--muted)">Inga nyheter hittades just nu</div><div style="font-size:13px;margin-top:6px;color:var(--muted)">Försök igen om en stund</div></div>`;
+    return;
+  }
+
+  // Deduplicate by title similarity and sort by date
+  const seen=new Set();
+  const unique=allNews.filter(n=>{
+    const key=n.title.substring(0,40).toLowerCase();
+    if(seen.has(key))return false;
+    seen.add(key);return true;
+  });
+
+  // Sort by pubDate descending
+  unique.sort((a,b)=>new Date(b.pubDate||0)-new Date(a.pubDate||0));
+  const top=unique.slice(0,20);
+
+  const timeStr=`${now.getHours()}:${String(now.getMinutes()).padStart(2,'0')}`;
+  document.getElementById('opBadge').textContent=`Uppdaterad ${timeStr} · ${top.length} nyheter · ${stocks.length} bolag`;
+
+  document.getElementById('opContent').innerHTML=top.map(n=>{
+    const date=n.pubDate?new Date(n.pubDate).toLocaleDateString('sv-SE',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'}):'';
+    const flag=n.country==='SE'||n.country==='Sverige'?'🇸🇪':n.country==='US'||n.country==='USA'?'🇺🇸':'';
+    return`<div class="nwcard">
+      <div class="nwc-top">
+        <div class="nwc-title">${n.title}</div>
+      </div>
+      ${n.description?`<div class="nwc-body">${n.description}</div>`:''}
+      <div class="nwc-foot">
+        <div class="nwc-tags">
+          <span class="nwtag">${flag} ${n.stockName}</span>
+          ${n.ticker?`<span class="nwtag">${n.ticker}</span>`:''}
+          ${n.source?`<span class="nwtag">${n.source}</span>`:''}
+        </div>
+        <div style="display:flex;align-items:center;gap:8px">
+          <span class="nwc-meta">${date}</span>
+          ${n.link?`<a class="nwlink" href="${n.link}" target="_blank">↗</a>`:''}
+        </div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 // ══ BOLAGSSÖKNING VIA SUPABASE ══
