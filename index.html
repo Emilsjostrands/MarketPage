@@ -1129,9 +1129,9 @@ async function deleteStock(stockId){
   if(error)console.error('Delete error:',error);
 }
 
-// Main save — saves current stock after any change
-async function save(){
-  const s=stocks.find(x=>x.id===activeId);
+// Main save — saves a specific stock or the currently active one
+async function save(stockToSave){
+  const s=stockToSave||stocks.find(x=>x.id===activeId);
   if(s)await saveStock(s);
   // Also keep localStorage as offline backup
   try{localStorage.setItem('pv5-stocks',JSON.stringify(stocks));}catch(e){}
@@ -1173,7 +1173,7 @@ function toggleStar(stockId, e){
   const s=stocks.find(x=>x.id===stockId);
   if(!s)return;
   s.starred=!s.starred;
-  save();
+  save(s); // Save this specific stock, not just activeId
   renderSidebar();
 }
 
@@ -1886,60 +1886,76 @@ function searchCompany(query){
 async function doSearch(q){
   const res=document.getElementById('search-results');
   const spinner=document.getElementById('search-spinner');
+  console.log('doSearch called with:', q);
   try{
-    // Search Supabase instruments table
-    // Search on name, ticker and isin simultaneously
+    console.log('Querying Supabase instruments...');
     const {data,error}=await supa
       .from('instruments')
       .select('name,ticker,currency,isin,sector,branch,country,country_code,instrument')
-      .or(`name.ilike.%${q}%,ticker.ilike.%${q}%,isin.ilike.%${q}%`)
+      .ilike('name', `%${q}%`)
       .limit(12);
 
+    console.log('Search result:', data?.length, 'hits, error:', error?.message);
     spinner.style.display='none';
 
-    if(error||!data||!data.length){
+    if(error){
+      res.style.display='block';
+      res.innerHTML=`<div style="padding:16px;text-align:center;font-size:14px;color:var(--red)">Fel: ${error.message}</div>`;
+      return;
+    }
+
+    if(!data||!data.length){
+      // Try ticker search as fallback
+      const {data:data2}=await supa
+        .from('instruments')
+        .select('name,ticker,currency,isin,sector,branch,country,country_code,instrument')
+        .ilike('ticker', `%${q}%`)
+        .limit(12);
+      if(data2&&data2.length){
+        renderSearchResults(res, data2);
+        return;
+      }
       res.style.display='block';
       res.innerHTML=`<div style="padding:16px;text-align:center;font-size:14px;color:var(--muted)">
         Inga träffar för "<strong>${q}</strong>"<br>
-        <span style="font-size:15px">Prova en annan stavning, eller lägg till manuellt nedan</span>
+        <span style="font-size:13px">Prova en annan stavning eller lägg till manuellt</span>
       </div>`;
       return;
     }
 
-    res.style.display='block';
-    res.innerHTML=`<div style="padding:7px 14px;font-family:'DM Mono',monospace;font-size:15px;color:var(--muted);background:var(--s2);border-bottom:1px solid var(--border)">${data.length} träffar</div>`+
-    data.map(c=>{
-      const flag=getFlag('',c.country_code||c.country);
-      const safeC=encodeURIComponent(JSON.stringify({
-        name:c.name,
-        ticker:c.ticker,
-        currency:c.currency,
-        isin:c.isin,
-        sector:c.sector,
-        branch:c.branch,
-        country:c.country,
-        country_code:c.country_code,
-        source:'supabase'
-      }));
-      return`<div class="search-result-item" onclick="selectCompany(decodeURIComponent('${safeC}'),true)">
-        <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-          <div>
-            <div style="font-weight:500;font-size:15px;color:var(--blue-dark)">${flag} ${c.name}</div>
-            <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--muted2);margin-top:2px;display:flex;gap:8px">
-              <span>${c.ticker||''}</span>
-              ${c.sector?`<span>·</span><span>${c.sector}</span>`:''}
-              ${c.branch?`<span>·</span><span>${c.branch}</span>`:''}
-            </div>
-          </div>
-          <div style="font-family:'DM Mono',monospace;font-size:14px;color:var(--muted);text-align:right;flex-shrink:0">${c.currency||''}</div>
-        </div>
-      </div>`;
-    }).join('');
+    renderSearchResults(res, data);
   }catch(e){
+    console.error('doSearch error:', e);
     spinner.style.display='none';
     res.style.display='block';
     res.innerHTML=`<div style="padding:16px;text-align:center;font-size:14px;color:var(--red)">Sökningen misslyckades — ${e.message}</div>`;
   }
+}
+
+function renderSearchResults(res, data){
+  res.style.display='block';
+  res.innerHTML=`<div style="padding:7px 14px;font-family:'DM Mono',monospace;font-size:13px;color:var(--muted);background:var(--s2);border-bottom:1px solid var(--border)">${data.length} träffar</div>`+
+  data.map(c=>{
+    const flag=getFlag('',c.country_code||c.country);
+    const safeC=encodeURIComponent(JSON.stringify({
+      name:c.name,ticker:c.ticker,currency:c.currency,
+      isin:c.isin,sector:c.sector,branch:c.branch,
+      country:c.country,country_code:c.country_code,source:'supabase'
+    }));
+    return`<div class="search-result-item" onclick="selectCompany(decodeURIComponent('${safeC}'),true)">
+      <div style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+        <div>
+          <div style="font-weight:500;font-size:14px;color:var(--blue-dark)">${flag} ${c.name}</div>
+          <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted2);margin-top:2px;display:flex;gap:8px">
+            <span>${c.ticker||''}</span>
+            ${c.sector?`<span>·</span><span>${c.sector}</span>`:''}
+            ${c.branch?`<span>·</span><span>${c.branch}</span>`:''}
+          </div>
+        </div>
+        <div style="font-family:'DM Mono',monospace;font-size:12px;color:var(--muted);flex-shrink:0">${c.currency||''}</div>
+      </div>
+    </div>`;
+  }).join('');
 }
 
 function getFlag(exchange,country){
